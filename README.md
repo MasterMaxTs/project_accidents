@@ -1,6 +1,7 @@
 # job4j_accidents
 
 [![Build Status](https://app.travis-ci.com/MasterMaxTs/project_accidents.svg?branch=master)](https://app.travis-ci.com/MasterMaxTs/project_accidents)
+[![codecov](https://codecov.io/gh/MasterMaxTs/project_accidents/branch/master/graph/badge.svg?token=09OHVSG41I)](https://codecov.io/gh/MasterMaxTs/project_accidents)
 
 ### Это проект по созданию сайта "Автонарушители", доступного в браузере.
 В системе существуют две роли: _Обычные пользователи_ и _Автоинспекторы_.
