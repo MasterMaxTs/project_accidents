@@ -24,4 +24,4 @@ before_script:
 
 env:
   global:
-    - CODECOV_TOKEN=
+    - CODECOV_TOKEN=a39a7055-832e-4dc2-860b-c36eadbe7906
