@@ -2,6 +2,7 @@ package ru.job4j.accidents.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
@@ -18,8 +19,9 @@ public class AccidentController {
      * в виде списка
      */
     @GetMapping("/accidents")
-    public ModelAndView getAll() {
+    public ModelAndView getAll(@RequestParam("user") String user) {
         return new ModelAndView("index")
-                    .addObject("accidents", List.of());
+                        .addObject("user", user)
+                        .addObject("accidents", List.of());
     }
 }

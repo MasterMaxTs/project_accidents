@@ -16,6 +16,6 @@ public class IndexController {
      */
     @GetMapping("/index")
     public String index() {
-        return "redirect:/accidents";
+        return "redirect:/accidents?user=Maxim Tsurkanov";
     }
 }
