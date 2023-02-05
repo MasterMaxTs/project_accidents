@@ -44,19 +44,19 @@
             <caption style="caption-side: top; text-align: right; font-weight: bold">Автонарушения</caption>
             <thead class="table-danger">
                 <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">#</th>
-                    <th scope="col">#</th>
-                    <th scope="col">#</th>
+                    <th scope="col">id</th>
+                    <th scope="col">Имя</th>
+                    <th scope="col">Описание</th>
+                    <th scope="col">Адрес</th>
                 </tr>
             </thead>
             <tbody>
-            <tr th:each="accident :${accidents}">
-                <th scope="row" th:text="${accident.id}"></th>
-                <td th:text="${'#'}"></td>
-                <td th:text="${'#'}"></td>
-                <td th:text="${'#'}"></td>
-            </tr>
+                <tr th:each="accident :${accidents}">
+                    <th scope="row" th:text="${accident.id}"></th>
+                    <td th:text="${accident.name}"></td>
+                    <td th:text="${accident.text}"></td>
+                    <td th:text="${accident.address}"></td>
+                </tr>
             </tbody>
         </table>
         <br>
