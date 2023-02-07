@@ -23,13 +23,13 @@
     <div class="container">
         <ul class="nav nav-tabs">
             <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">Главная</a>
+                <a class="nav-link" aria-current="page" href="#">Авто Инциденты</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">Link</a>
+                <a class="nav-link active" th:href="@{/getAllAccidents}">Инциденты</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">Link</a>
+                <a class="nav-link" th:href="@{/createAccident}">Добавить инцидент</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="#">Link</a>
@@ -48,6 +48,7 @@
                     <th scope="col">Имя</th>
                     <th scope="col">Описание</th>
                     <th scope="col">Адрес</th>
+                    <th scope="col">Действие</th>
                 </tr>
             </thead>
             <tbody>
@@ -56,9 +57,35 @@
                     <td th:text="${accident.name}"></td>
                     <td th:text="${accident.text}"></td>
                     <td th:text="${accident.address}"></td>
+                    <td>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <form th:action="@{|/accidents/${accident.id}|}" method="GET">
+                                            <button type="submit" class="btn btn-secondary" >Открыть</button>
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <form th:action="@{|/accidents/update/${accident.id}|}" method="GET">
+                                            <button type="submit" class="btn btn-secondary">Редактировать</button>
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <form th:action="@{|/accidents/delete/${accident.id}|}" method="GET">
+                                        <button type="submit" class="btn btn-secondary">Удалить</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
                 </tr>
             </tbody>
         </table>
+        <div style="float: left">
+            <button type="button" class="btn btn-success" onclick="window.location.href='/createAccident'">Создать</button>
+        </div>
         <br>
     </div>
 </div>
