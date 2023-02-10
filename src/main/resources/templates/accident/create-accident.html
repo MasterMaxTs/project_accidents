@@ -23,7 +23,7 @@
     <div class="container">
         <ul class="nav nav-tabs">
             <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="#">Авто Инциденты</a>
+                <a class="nav-link" aria-current="page" href="#"><b>Авто Инциденты</b></a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" th:href="@{/getAllAccidents}">Инциденты</a>
@@ -50,8 +50,8 @@
                     <form th:action="@{/saveAccident}" method="POST" enctype="multipart/form-data" th:object="${accident}">
                         <div class="form-group">
                             <div th:if="${update}">
-                                <input type="hidden" name="update" value="true"/>
-                                <input type="hidden" name="id" th:value="${accident.id}">
+                                <input type="hidden" name="update" th:value="${update}"/>
+                                <input type="hidden" name="id" th:field="*{id}">
                             </div>
                             <label for="name">Имя</label>
                             <br><br>

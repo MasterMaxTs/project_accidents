@@ -54,7 +54,7 @@ public class AccidentController {
      * @exception NoSuchElementException в случае, если автоинцидент не найден
      * в хранилище, возвращает вид по имени "error/404" с информацией об ошибке
      */
-    @GetMapping("/accidents/update/{accidentId}")
+    @GetMapping("/accidents/{accidentId}/edit")
     public ModelAndView viewUpdateAccident(@PathVariable("accidentId") int id) {
         Accident accident;
         try {
@@ -77,14 +77,17 @@ public class AccidentController {
     @PostMapping("/saveAccident")
     public String saveOrUpdate(@ModelAttribute Accident accident,
                                @RequestParam(value = "update", required = false) String flag) {
-        if (flag != null) {
-            service.update(accident);
-            System.out.println("Update success");
-        } else {
+        String rsl;
+        if (flag == null) {
             service.add(accident);
-            System.out.println("Create success");
+            System.out.println("Accident created successfully");
+            rsl = "redirect:/index";
+        } else {
+            service.update(accident);
+            System.out.println("Accident updated successfully");
+            rsl = "accident/update-accident-confirm";
         }
-        return "redirect:/index";
+        return rsl;
     }
 
     /**
@@ -94,7 +97,7 @@ public class AccidentController {
      * в хранилище, возвращает вид по имени "error/404" с информацией об ошибке
      * @return перенаправление на страницу со всеми автоинцидентами
      */
-    @GetMapping("/accidents/delete/{accidentId}")
+    @GetMapping("/accidents/{accidentId}/delete")
     public String delete(@PathVariable("accidentId") int id) {
         Accident accident;
         try {

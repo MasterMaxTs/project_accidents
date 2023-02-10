@@ -23,7 +23,7 @@
     <div class="container">
         <ul class="nav nav-tabs">
             <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="#">Авто Инциденты</a>
+                <a class="nav-link" aria-current="page" href="#"><b>Авто Инциденты</b></a>
             </li>
             <li class="nav-item">
                 <a class="nav-link active" th:href="@{/getAllAccidents}">Инциденты</a>
@@ -67,12 +67,12 @@
                                         </form>
                                     </td>
                                     <td>
-                                        <form th:action="@{|/accidents/update/${accident.id}|}" method="GET">
+                                        <form th:action="@{|/accidents/${accident.id}/edit|}" method="GET">
                                             <button type="submit" class="btn btn-secondary">Редактировать</button>
                                         </form>
                                     </td>
                                     <td>
-                                        <form th:action="@{|/accidents/delete/${accident.id}|}" method="GET">
+                                        <form th:action="@{|/accidents/${accident.id}/delete|}" method="GET">
                                         <button type="submit" class="btn btn-secondary">Удалить</button>
                                         </form>
                                     </td>
