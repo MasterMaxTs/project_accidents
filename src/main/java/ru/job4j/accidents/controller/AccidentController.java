@@ -69,25 +69,27 @@ public class AccidentController {
     }
 
     /**
-     * Сохраняет или обновляет автоинцидент в хранилище
+     * Сохраняет автоинцидент в хранилище
      * @param accident автоинцидент
-     * @param flag флаг, указывающий какое действие совершается с автоинцидентом
-     * @return перенаправление на страницу со всеми автоинцидентами
+     * @return перенаправление на страницу со всеми инцидентами
      */
     @PostMapping("/saveAccident")
-    public String saveOrUpdate(@ModelAttribute Accident accident,
-                               @RequestParam(value = "update", required = false) String flag) {
-        String rsl;
-        if (flag == null) {
-            service.add(accident);
-            System.out.println("Accident created successfully");
-            rsl = "redirect:/index";
-        } else {
-            service.update(accident);
-            System.out.println("Accident updated successfully");
-            rsl = "accident/update-accident-confirm";
-        }
-        return rsl;
+    public String save(@ModelAttribute Accident accident) {
+        service.add(accident);
+        System.out.println("Accident created successfully");
+        return "redirect:/index";
+    }
+
+    /**
+     * Обновляет данные автоинцидента в хранилище
+     * @param accident автоинцидент
+     * @return вид с информацией об успешном обновлении данных
+     */
+    @PostMapping("/updateAccident")
+    public String update(@ModelAttribute Accident accident) {
+        service.update(accident);
+        System.out.println("Accident updated successfully");
+            return "accident/update-accident-success";
     }
 
     /**

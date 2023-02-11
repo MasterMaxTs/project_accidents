@@ -23,7 +23,7 @@
     <div class="container">
         <ul class="nav nav-tabs">
             <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="#"><b>Авто Инциденты</b></a>
+                <a class="nav-link" aria-current="page" href="#"><b>АВТОИНЦИДЕНТЫ</b></a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" th:href="@{/getAllAccidents}">Инциденты</a>
@@ -40,17 +40,16 @@
             </li>
         </ul>
         <br>
-        <div class="row pt-3">
+        <div th:with="doUpdate=${update != null}" class="row pt-3">
             <div class="card" style="width: 70%; border-radius: 10px 10px 10px 10px">
                 <div class="card-header" style="border: lightslategray; background-color: burlywood">
-                    <span th:if="${update == null}">Новый инцидент</span>
-                    <span th:if="${update}">Редактировать инцидент</span>
+                    <span th:unless="${doUpdate}">Новый инцидент</span>
+                    <span th:if="${doUpdate}">Редактировать инцидент</span>
                 </div>
                 <div class="card-body">
-                    <form th:action="@{/saveAccident}" method="POST" enctype="multipart/form-data" th:object="${accident}">
+                    <form th:action="${doUpdate}? ${'/updateAccident'} : ${'/saveAccident'}" method="POST" enctype="multipart/form-data" th:object="${accident}">
                         <div class="form-group">
-                            <div th:if="${update}">
-                                <input type="hidden" name="update" th:value="${update}"/>
+                            <div th:if="${doUpdate}">
                                 <input type="hidden" name="id" th:field="*{id}">
                             </div>
                             <label for="name">Имя</label>
@@ -61,7 +60,7 @@
                             <label for="text">Описание</label>
                             <br><br>
                             <textarea id="text" class="form-control" style="width: 600px; height: 300px"
-                                    placeholder="Введите описание" th:field="*{text}" required></textarea>
+                                      placeholder="Введите описание" th:field="*{text}" required></textarea>
                             <br><br>
                             <label for="address">Адрес</label>
                             <br><br>
@@ -70,8 +69,8 @@
                             <br>
                         </div>
                         <div>
-                            <button th:if="${update == null}" type="submit" class="btn btn-success">Сохранить</button>
-                            <button th:if="${update}" type="submit" class="btn btn-warning">Редактировать</button>
+                            <button th:unless="${doUpdate}" type="submit" class="btn btn-success">Сохранить</button>
+                            <button th:if="${doUpdate}" type="submit" class="btn btn-warning">Редактировать</button>
                         </div>
                     </form>
                 </div>
