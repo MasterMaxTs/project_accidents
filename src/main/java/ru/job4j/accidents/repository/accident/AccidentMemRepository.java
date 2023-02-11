@@ -3,6 +3,7 @@ package ru.job4j.accidents.repository.accident;
 import net.jcip.annotations.ThreadSafe;
 import org.springframework.stereotype.Repository;
 import ru.job4j.accidents.model.Accident;
+import ru.job4j.accidents.model.AccidentType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,9 +33,21 @@ public class AccidentMemRepository implements AccidentRepository {
      * Инициализирует хранилище начальными данными
      */
     private void init() {
-        add(new Accident("AccidentName1", "AccidentText1", "AccidentAddress1"));
-        add(new Accident("AccidentName2", "AccidentText2", "AccidentAddress2"));
-        add(new Accident("AccidentName3", "AccidentText3", "AccidentAddress3"));
+        add(new Accident(
+                "AccidentName1",
+                new AccidentType(1, "Две машины"),
+                "AccidentText1",
+                "AccidentAddress1"));
+        add(new Accident(
+                "AccidentName2",
+                new AccidentType(2, "Машина и человек"),
+                "AccidentText2",
+                "AccidentAddress2"));
+        add(new Accident(
+                "AccidentName3",
+                new AccidentType(3, "Машина и велосипед"),
+                "AccidentText3",
+                "AccidentAddress3"));
     }
 
     @Override

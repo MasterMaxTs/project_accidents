@@ -3,7 +3,7 @@ package ru.job4j.accidents.model;
 import lombok.*;
 
 /**
- * Модель данных автонарушение
+ * Модель данных автоинцидент
  */
 @Data
 @NoArgsConstructor
@@ -12,19 +12,25 @@ import lombok.*;
 public class Accident {
 
     /**
-     * Идентификатор автонарушения
+     * Идентификатор автоинцидента
      */
     @EqualsAndHashCode.Include
     private int id;
 
     /**
-     * Имя нарушителя
+     * Название
      */
     @NonNull
     private String name;
 
     /**
-     * Описание нарушения
+     * Тип автоинцидента
+     */
+    @NonNull
+    private AccidentType type;
+
+    /**
+     * Описание
      */
     @NonNull
     private String text;

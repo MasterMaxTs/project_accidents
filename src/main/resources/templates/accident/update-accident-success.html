@@ -23,7 +23,7 @@
     <div class="container">
         <ul class="nav nav-tabs">
             <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="#"><b>Авто Инциденты</b></a>
+                <a class="nav-link" aria-current="page" href="#"><b>АВТОИНЦИДЕНТЫ</b></a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" th:href="@{/getAllAccidents}">Инциденты</a>
@@ -46,7 +46,7 @@
                     <span>Редактирование инцидента</span>
                 </div>
                 <div class="card-body" style="border: indianred">
-                    <h4 th:text="${'Информация об инциденте №' + accident.id + ' обновлена успешно!'}"></h4>
+                    <h4 th:text="${'Информация об инциденте №' + accident.id + ' успешно обновлена!'}"></h4>
                     <br>
                     <button type="button" class="btn btn-secondary" onclick="window.location.href='/index'"> На главную</button>
                 </div>

@@ -14,6 +14,11 @@
             integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
             crossorigin="anonymous"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        .select {
+            width: 300px;
+        }
+    </style>
     <title>Создать инцидент</title>
 </head>
 <body>
@@ -56,6 +61,13 @@
                             <br><br>
                             <input type="text" id="name" class="form-control" style="width: 200px"
                                    placeholder="Введите имя" th:field="*{name}" required/>
+                            <br><br>
+                            <label for="type.id">Тип</label>
+                            <br><br>
+                            <select class="select" id="type.id" name="type.id">
+                                <option th:text="${doUpdate}? ${'Текущий тип: ' + accident.type.name} : ${'Текущий тип: ' + stubType}" disabled></option>
+                                <option th:each="type: ${types}" th:text="${type.name}" th:value="${type.id}"></option>
+                            </select>
                             <br><br>
                             <label for="text">Описание</label>
                             <br><br>
