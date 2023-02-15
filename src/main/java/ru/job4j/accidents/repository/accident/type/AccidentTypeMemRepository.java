@@ -12,9 +12,9 @@ import java.util.*;
 public class AccidentTypeMemRepository implements AccidentTypeRepository {
 
     /**
-     * Хранилище в виде HashSet
+     * Хранилище в виде HashMap
      */
-    private final Set<AccidentType> types = new HashSet<>();
+    private final Map<Integer, AccidentType> types = new HashMap<>();
 
     public AccidentTypeMemRepository() {
         init();
@@ -24,43 +24,32 @@ public class AccidentTypeMemRepository implements AccidentTypeRepository {
      * Инициализирует хранилище начальными данными
      */
     private void init() {
-        types.add(new AccidentType(1, "Две машины"));
-        types.add(new AccidentType(2, "Машина и человек"));
-        types.add(new AccidentType(3, "Машина и велосипед"));
+        add(new AccidentType(1, "Две машины"));
+        add(new AccidentType(2, "Машина и человек"));
+        add(new AccidentType(3, "Машина и велосипед"));
     }
     @Override
     public AccidentType add(AccidentType accidentType) {
-        AccidentType rsl = null;
-        if (types.add(accidentType)) {
-            rsl = accidentType;
-        }
-        return rsl;
+        return types.putIfAbsent(accidentType.getId(), accidentType);
     }
 
     @Override
     public boolean update(AccidentType accidentType) {
-        types.remove(accidentType);
-        return types.add(accidentType);
+        return types.replace(accidentType.getId(), accidentType) != null;
     }
 
     @Override
     public AccidentType delete(AccidentType accidentType) {
-        AccidentType rsl = null;
-        if (types.remove(accidentType)) {
-            rsl = accidentType;
-        }
-        return rsl;
+        return types.remove(accidentType.getId());
     }
 
     @Override
     public List<AccidentType> findAll() {
-        return new ArrayList<>(types);
+        return new ArrayList<>(types.values());
     }
 
     @Override
     public Optional<AccidentType> findById(int id) {
-        return types.stream()
-                .filter(at -> at.getId() == id)
-                .findFirst();
+        return Optional.ofNullable(types.get(id));
     }
 }

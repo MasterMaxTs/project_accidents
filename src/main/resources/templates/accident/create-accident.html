@@ -64,8 +64,8 @@
                             <br><br>
                             <label for="type.id">Тип</label>
                             <br><br>
-                            <select class="select" id="type.id" name="type.id">
-                                <option th:text="${doUpdate}? ${'Текущий тип: ' + accident.type.name} : ${'Текущий тип: ' + stubType}" disabled></option>
+                            <select class="select" id="type.id" name="type.id" required>
+                                <option th:text="${doUpdate}? ${'Текущий тип: ' + accident.type.name} : ${'Текущий тип: ---'}" disabled></option>
                                 <option th:each="type: ${types}" th:text="${type.name}" th:value="${type.id}"></option>
                             </select>
                             <br><br>
