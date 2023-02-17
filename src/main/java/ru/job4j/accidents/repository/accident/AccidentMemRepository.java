@@ -4,11 +4,9 @@ import net.jcip.annotations.ThreadSafe;
 import org.springframework.stereotype.Repository;
 import ru.job4j.accidents.model.Accident;
 import ru.job4j.accidents.model.AccidentType;
+import ru.job4j.accidents.model.Rule;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -37,16 +35,20 @@ public class AccidentMemRepository implements AccidentRepository {
                 "AccidentName1",
                 new AccidentType(1, "Две машины"),
                 "AccidentText1",
+                Set.of(new Rule(1, "Статья. 1")),
                 "AccidentAddress1"));
         add(new Accident(
                 "AccidentName2",
                 new AccidentType(2, "Машина и человек"),
                 "AccidentText2",
+                Set.of(new Rule(2, "Статья. 2"),
+                       new Rule(3, "Статья. 3")),
                 "AccidentAddress2"));
         add(new Accident(
                 "AccidentName3",
                 new AccidentType(3, "Машина и велосипед"),
                 "AccidentText3",
+                Set.of(new Rule(4, "Статья. 4")),
                 "AccidentAddress3"));
     }
 

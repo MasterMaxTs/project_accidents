@@ -14,7 +14,7 @@
             integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
             crossorigin="anonymous"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <title>Редактировать инцидент</title>
+    <title>Удалить инцидент</title>
 </head>
 <body>
 <br>
@@ -43,12 +43,12 @@
         <div class="row pt-3">
             <div class="card" style="width: 70%; border-radius: 10px 10px 10px 10px">
                 <div class="card-header" style="border: lightslategray; background-color: yellowgreen">
-                    <span>Редактирование инцидента</span>
+                    <span>Удаление инцидента</span>
                 </div>
                 <div class="card-body" style="border: yellowgreen">
-                    <h4 th:text="${'Информация об инциденте №' + accident.id + ' успешно обновлена!'}"></h4>
+                    <h4 th:text="${'Инцидент №' + accident.id + ' успешно удален из базы данных!'}"></h4>
                     <br>
-                    <button type="button" class="btn btn-secondary" onclick="window.location.href='/index'"> На главную</button>
+                    <button type="button" class="btn btn-secondary" style="float: right" onclick="window.location.href='/index'"> Закрыть</button>
                 </div>
             </div>
         </div>

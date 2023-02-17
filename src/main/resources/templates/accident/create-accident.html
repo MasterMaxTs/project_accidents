@@ -15,8 +15,11 @@
             crossorigin="anonymous"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <style>
-        .select {
+        .select-type {
             width: 300px;
+        }
+        .select-rules {
+            width: 200px;
         }
     </style>
     <title>Создать инцидент</title>
@@ -64,15 +67,27 @@
                             <br><br>
                             <label for="type.id">Тип</label>
                             <br><br>
-                            <select class="select" id="type.id" name="type.id" required>
-                                <option th:text="${doUpdate}? ${'Текущий тип: ' + accident.type.name} : ${'Текущий тип: ---'}" disabled></option>
-                                <option th:each="type: ${types}" th:text="${type.name}" th:value="${type.id}"></option>
+                            <select class="select-type" id="type.id" name="type.id" required>
+                                <option th:if="${doUpdate}" th:text="${'Текущий тип: '}" style="background-color: lightcoral" disabled></option>
+                                <option th:if="${doUpdate}" th:text="${accident.type.name}" style="background-color:bisque" disabled></option>
+                                <option disabled>Выбрать&#8595;:</option>
+                                <option th:each="type :${types}" th:text="${type.name}" th:value="${type.id}"></option>
                             </select>
                             <br><br>
                             <label for="text">Описание</label>
                             <br><br>
                             <textarea id="text" class="form-control" style="width: 600px; height: 300px"
                                       placeholder="Введите описание" th:field="*{text}" required></textarea>
+                            <br><br>
+                            <label for="rIds">Статьи</label>
+                            <p>(для выбора нескольких статей, удерживайте Ctrl)</p>
+                            <br>
+                            <select class="select-rules" id="rIds" name="rIds" multiple size="7" required>
+                                <option th:if="${doUpdate}" th:text="${'Текущие статьи: '}" style="background-color: lightcoral" disabled></option>
+                                <option th:if="${doUpdate}" th:each="rule :${accident.rules}" th:text="${rule.name}" style="background-color:bisque" disabled></option>
+                                <option disabled>Выбрать&#8595;:</option>
+                                <option th:each="rule :${rules}" th:text="${rule.name}" th:value="${rule.id}"></option>
+                            </select>
                             <br><br>
                             <label for="address">Адрес</label>
                             <br><br>

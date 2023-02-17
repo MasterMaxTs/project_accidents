@@ -14,7 +14,7 @@
             integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
             crossorigin="anonymous"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <title>Редактировать инцидент</title>
+    <title>Создать инцидент</title>
 </head>
 <body>
 <br>
@@ -43,12 +43,18 @@
         <div class="row pt-3">
             <div class="card" style="width: 70%; border-radius: 10px 10px 10px 10px">
                 <div class="card-header" style="border: lightslategray; background-color: yellowgreen">
-                    <span>Редактирование инцидента</span>
+                    <span>Создание инцидента</span>
                 </div>
                 <div class="card-body" style="border: yellowgreen">
-                    <h4 th:text="${'Информация об инциденте №' + accident.id + ' успешно обновлена!'}"></h4>
+                    <h4 th:text="${'Добавлен новый инцидент №' + accident.id + ' !'}" style="text-align: center"></h4>
+                    <h6><b>Название:</b></h6>
+                    <h6 th:text="${accident.name}"></h6>
+                    <h6><b>Описание:</b></h6>
+                    <h6 th:text="${accident.text}"></h6>
+                    <h6><b>Применённые статьи:</b></h6>
+                    <h6 th:text="${#strings.listJoin(accident.rules, ' , ')}"></h6>
                     <br>
-                    <button type="button" class="btn btn-secondary" onclick="window.location.href='/index'"> На главную</button>
+                    <button type="button" class="btn btn-secondary" style="float: right" onclick="window.location.href='/index'"> На главную</button>
                 </div>
             </div>
         </div>

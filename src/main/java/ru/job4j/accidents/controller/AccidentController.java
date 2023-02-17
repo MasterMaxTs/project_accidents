@@ -7,7 +7,9 @@ import org.springframework.web.servlet.ModelAndView;
 import ru.job4j.accidents.model.Accident;
 import ru.job4j.accidents.service.accident.AccidentService;
 import ru.job4j.accidents.service.accident.type.AccidentTypeService;
+import ru.job4j.accidents.service.rule.RuleService;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.NoSuchElementException;
 
 /**
@@ -22,6 +24,7 @@ public class AccidentController {
      */
     private AccidentService accidentService;
     private AccidentTypeService accidentTypeService;
+    private RuleService ruleService;
 
     @ModelAttribute("user")
     public String getCurrentUserName() {
@@ -40,21 +43,23 @@ public class AccidentController {
     }
 
     /**
-     * Возращает вид для создания нового автоинцидента
+     * Возращает вид для создания нового автоинцидента с сопутствующими
+     * данными в виде списков
      * @return вид по имени "accident/create-accident"
-     * в виде формы
+     * в виде формы вместе с сопутствующими данными в виде списков
      */
     @GetMapping("/createAccident")
     public ModelAndView viewCreateAccident(@ModelAttribute Accident accident) {
         return new ModelAndView("accident/create-accident")
-                    .addObject("types", accidentTypeService.findAll());
+                    .addObject("types", accidentTypeService.findAll())
+                    .addObject("rules", ruleService.findAll());
     }
 
     /**
      * Возращает вид для обновления сведений об автоинциденте
      * @return вид по имени "accident/create-accident" с заполненными полями
      * формы начальными данными
-     * @exception NoSuchElementException - если автоинцидент
+     * @throws NoSuchElementException - если автоинцидент
      * не найден в хранилище
      */
     @GetMapping("/accidents/{accidentId}/edit")
@@ -62,6 +67,7 @@ public class AccidentController {
         return new ModelAndView("accident/create-accident")
                     .addObject("accident", accidentService.findById(id))
                     .addObject("types", accidentTypeService.findAll())
+                    .addObject("rules", ruleService.findAll())
                     .addObject("update", true);
     }
 
@@ -69,48 +75,82 @@ public class AccidentController {
      * Сохраняет автоинцидент в хранилище
      * @param accident автоинцидент
      * @param typeId идентификатор типа автоинцидента
-     * @return перенаправление на страницу со всеми инцидентами
-     * @exception NoSuchElementException - если тип автоиницидента
+     * @param request HttpServletRequest
+     * @return вид с информацией об успешном создании нового автоинцидента
+     * @throws NoSuchElementException - если тип автоиницидента
      * не найден в хранилище
      */
     @PostMapping("/saveAccident")
-    public String save(@ModelAttribute Accident accident,
-                       @RequestParam("type.id") int typeId) {
+    public ModelAndView save(@ModelAttribute Accident accident,
+                             @RequestParam("type.id") int typeId,
+                             HttpServletRequest request) {
+        String[] rIds = request.getParameterValues("rIds");
         accident.setType(accidentTypeService.findById(typeId));
+        accident.setRules(ruleService.getRulesFromIds(rIds));
         accidentService.add(accident);
         System.out.println("Accident created successfully");
-        return "redirect:/index";
+        return new ModelAndView("accident/create-accident-success");
     }
 
     /**
      * Обновляет данные автоинцидента в хранилище
      * @param accident автоинцидент
      * @param typeId идентификатор типа автоинцидента
-     * @return вид с информацией об успешном обновлении данных
-     * @exception NoSuchElementException - если тип автоиницидента
+     * @param request HttpServletRequest
+     * @return вид с информацией об успешном обновлении данных автоинцидента
+     * @throws NoSuchElementException - если тип автоиницидента
      * не найден в хранилище
-     *
      */
     @PostMapping("/updateAccident")
-    public String update(@ModelAttribute Accident accident,
-                         @RequestParam("type.id") int typeId) {
+    public ModelAndView update(@ModelAttribute Accident accident,
+                               @RequestParam("type.id") int typeId,
+                               HttpServletRequest request) {
+        String[] rIds = request.getParameterValues("rIds");
         accident.setType(accidentTypeService.findById(typeId));
+        accident.setRules(ruleService.getRulesFromIds(rIds));
         accidentService.update(accident);
         System.out.println("Accident updated successfully");
-        return "accident/update-accident-success";
+        return new ModelAndView("accident/update-accident-success");
+    }
+
+    /**
+     * Возвращает вид с информацией выбранного автоинцидента
+     * @param id идентификатор автоинцидента
+     * @return возвращает вид с информацией
+     */
+    @GetMapping("/accidents/{accidentId}")
+    public ModelAndView show(@PathVariable("accidentId") int id) {
+        return new ModelAndView("accident/show-accident")
+                    .addObject("accident", accidentService.findById(id));
+    }
+
+    /**
+     * Возвращает вид с информацией выбранного автоинцидента и предложением
+     * пользователю выполнить удаление этого автоинцидента
+     * @param id идентификатор автоинцидента
+     * @return возвращает вид с информацией и предложением
+     * пользователю выполнить удаление автоинцидента
+     */
+    @GetMapping("/accidents/{accidentId}/delete/confirm")
+    public ModelAndView viewDeleteAccident(@PathVariable("accidentId") int id) {
+        return new ModelAndView("accident/show-accident")
+                .addObject("accident", accidentService.findById(id))
+                .addObject("deleteConfirm", true);
     }
 
     /**
      * Удаляет автоинцидент из хранилища по id
      * @param id идентификатор автоинцидента
-     * @return перенаправление на страницу со всеми автоинцидентами
-     * @exception NoSuchElementException - если автоинцидент не найден
+     * @return вид с информацией об успешном удалении автоинцидента
+     * @throws NoSuchElementException - если автоинцидент не найден
      * в хранилище
      */
     @GetMapping("/accidents/{accidentId}/delete")
-    public String delete(@PathVariable("accidentId") int id) {
-        accidentService.delete(accidentService.findById(id));
+    public ModelAndView delete(@PathVariable("accidentId") int id) {
+        Accident accident = accidentService.findById(id);
+        accidentService.delete(accident);
         System.out.println("Accident deleted successfully");
-        return "redirect:/index";
+        return new ModelAndView("accident/delete-accident-success")
+                    .addObject("accident", accident);
     }
 }
