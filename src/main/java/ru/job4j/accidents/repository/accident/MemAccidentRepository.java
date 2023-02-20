@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Repository
 @ThreadSafe
-public class AccidentMemRepository implements AccidentRepository {
+public class MemAccidentRepository implements AccidentRepository {
 
     /**
      * Хранилище в виде СoncurrentHashMap
@@ -23,7 +23,7 @@ public class AccidentMemRepository implements AccidentRepository {
     private final Map<Integer, Accident> accidents = new ConcurrentHashMap<>();
     private final AtomicInteger atomicInteger = new AtomicInteger(1);
 
-    public AccidentMemRepository() {
+    public MemAccidentRepository() {
         init();
     }
 

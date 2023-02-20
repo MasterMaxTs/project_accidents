@@ -53,6 +53,8 @@
                                 <th>Название</th>
                                 <th>Описание</th>
                                 <th>Применённые статьи</th>
+                                <th>Создан</th>
+                                <th>Редактирован</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -61,6 +63,8 @@
                                 <td th:text="${accident.name}"></td>
                                 <td th:text="${accident.text}"></td>
                                 <td th:text="${#strings.listJoin(accident.rules, ' , ')}"></td>
+                                <td th:text="${#temporals.format(accident.created, 'dd/MM/YY HH:mm')}"></td>
+                                <td th:text="${#temporals.format(accident.updated, 'dd/MM/YY HH:mm')}"></td>
                             </tr>
                         </tbody>
                     </table>

@@ -59,6 +59,7 @@
                         <div class="form-group">
                             <div th:if="${doUpdate}">
                                 <input type="hidden" name="id" th:field="*{id}">
+                                <input type="hidden" name="created" th:field="*{created}">
                             </div>
                             <label for="name">Имя</label>
                             <br><br>

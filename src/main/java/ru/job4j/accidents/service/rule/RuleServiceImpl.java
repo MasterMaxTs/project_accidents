@@ -1,24 +1,36 @@
 package ru.job4j.accidents.service.rule;
 
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.job4j.accidents.model.Rule;
 import ru.job4j.accidents.repository.rule.RuleRepository;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
  * Реализация сервиса Статей автонарушений
  */
 @Service
-@AllArgsConstructor
 public class RuleServiceImpl implements RuleService {
 
     /**
      * Делегирование выполнения операций хранилищу статей автонарушений
      */
-    private RuleRepository store;
+    private final RuleRepository store;
+
+    /**
+     * Конструктор
+     * @param store внедрение зависимости RuleRepository с уточнением
+     * бина реализации
+     */
+    public RuleServiceImpl(@Qualifier("jdbcTemplateRuleRepository")
+                           RuleRepository store) {
+        this.store = store;
+    }
 
     @Override
     public Rule add(Rule rule) {

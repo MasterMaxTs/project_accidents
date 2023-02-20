@@ -2,6 +2,7 @@ package ru.job4j.accidents.model;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 /**
@@ -48,4 +49,15 @@ public class Accident {
      */
     @NonNull
     private String address;
+
+    /**
+     * Локальное время создания автонинцидента
+     */
+    private LocalDateTime created;
+
+    /**
+     * Локальное время обновления автонинцидента
+     */
+    private LocalDateTime updated;
+
 }

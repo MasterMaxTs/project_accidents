@@ -1,6 +1,6 @@
 package ru.job4j.accidents.service.accident;
 
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.job4j.accidents.model.Accident;
 import ru.job4j.accidents.repository.accident.AccidentRepository;
@@ -12,13 +12,23 @@ import java.util.NoSuchElementException;
  * Реализация сервиса Автомобильных инцидентов
  */
 @Service
-@AllArgsConstructor
 public class AccidentServiceImpl implements AccidentService {
 
     /**
-     * Делегирование выполнения операций хранилищу Автомобильных инцидентов
+     * Делегирование выполнения операций JdbcTemplate при доступе к хранилищу
+     * Автомобильных инцидентов
      */
     private final AccidentRepository store;
+
+    /**
+     * Конструктор
+     * @param store внедрение зависимости AccidentRepository с уточнением
+     * бина реализации
+     */
+    public AccidentServiceImpl(
+            @Qualifier("jdbcTemplateAccidentRepository") AccidentRepository store) {
+        this.store = store;
+    }
 
     @Override
     public Accident add(Accident accident) {

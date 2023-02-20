@@ -10,6 +10,7 @@ import ru.job4j.accidents.service.accident.type.AccidentTypeService;
 import ru.job4j.accidents.service.rule.RuleService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 
 /**
@@ -87,6 +88,7 @@ public class AccidentController {
         String[] rIds = request.getParameterValues("rIds");
         accident.setType(accidentTypeService.findById(typeId));
         accident.setRules(ruleService.getRulesFromIds(rIds));
+        accident.setCreated(LocalDateTime.now());
         accidentService.add(accident);
         System.out.println("Accident created successfully");
         return new ModelAndView("accident/create-accident-success");
@@ -108,6 +110,7 @@ public class AccidentController {
         String[] rIds = request.getParameterValues("rIds");
         accident.setType(accidentTypeService.findById(typeId));
         accident.setRules(ruleService.getRulesFromIds(rIds));
+        accident.setUpdated(LocalDateTime.now());
         accidentService.update(accident);
         System.out.println("Accident updated successfully");
         return new ModelAndView("accident/update-accident-success");

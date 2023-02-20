@@ -9,14 +9,14 @@ import java.util.*;
  * Реализация  локального хранилища типа автомобильных инцидентов
  */
 @Repository
-public class AccidentTypeMemRepository implements AccidentTypeRepository {
+public class MemAccidentTypeRepository implements AccidentTypeRepository {
 
     /**
      * Хранилище в виде HashMap
      */
     private final Map<Integer, AccidentType> types = new HashMap<>();
 
-    public AccidentTypeMemRepository() {
+    public MemAccidentTypeRepository() {
         init();
     }
 

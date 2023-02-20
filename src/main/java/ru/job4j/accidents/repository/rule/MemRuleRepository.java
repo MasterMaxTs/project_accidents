@@ -9,14 +9,14 @@ import java.util.*;
  * Реализация локального хранилища Статей автонарушений
  */
 @Repository
-public class RuleMemRepository implements RuleRepository {
+public class MemRuleRepository implements RuleRepository {
 
     /**
      * Список статей в виде HashSet
      */
     private final Set<Rule> rules = new HashSet<>();
 
-    public RuleMemRepository() {
+    public MemRuleRepository() {
         init();
     }
 

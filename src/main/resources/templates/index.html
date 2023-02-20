@@ -50,6 +50,8 @@
                     <th scope="col">Описание</th>
                     <th scope="col">Список статей</th>
                     <th scope="col">Адрес</th>
+                    <th scope="col">Создан</th>
+                    <th scope="col">Обновлён</th>
                     <th scope="col">Действие</th>
                 </tr>
             </thead>
@@ -61,6 +63,8 @@
                     <td th:text="${accident.text}"></td>
                     <td th:text="${#strings.listJoin(accident.rules, ' , ')}"></td>
                     <td th:text="${accident.address}"></td>
+                    <td th:text="${#temporals.format(accident.created, 'dd/MM/YY HH:mm')}"></td>
+                    <td th:text="${#temporals.format(accident.updated, 'dd/MM/YY HH:mm')}"></td>
                     <td>
                         <table>
                             <tbody>

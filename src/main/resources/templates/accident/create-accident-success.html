@@ -53,6 +53,8 @@
                     <h6 th:text="${accident.text}"></h6>
                     <h6><b>Применённые статьи:</b></h6>
                     <h6 th:text="${#strings.listJoin(accident.rules, ' , ')}"></h6>
+                    <h6><b>Локальное время создания:</b></h6>
+                    <h6 th:text="${#temporals.format(accident.created, 'dd/MM/YYYY HH:mm')}"></h6>
                     <br>
                     <button type="button" class="btn btn-secondary" style="float: right" onclick="window.location.href='/index'"> На главную</button>
                 </div>
