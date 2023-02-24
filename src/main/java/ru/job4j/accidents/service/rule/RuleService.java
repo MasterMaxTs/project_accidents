@@ -3,7 +3,7 @@ package ru.job4j.accidents.service.rule;
 import ru.job4j.accidents.model.Rule;
 import ru.job4j.accidents.service.Service;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * Сервис Статей автонарушений
@@ -15,5 +15,5 @@ public interface RuleService extends Service<Rule> {
      * @param rIds строковый массив идентификаторов статей
      * @return множество уникальных статей
      */
-    Set<Rule> getRulesFromIds(String[] rIds);
+    List<Rule> getRulesFromIds(String[] rIds);
 }

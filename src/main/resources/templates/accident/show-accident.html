@@ -14,6 +14,41 @@
             integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
             crossorigin="anonymous"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        #table-first_column {
+            width: 30%;
+            background-color: #d6e9ff;
+            font-weight: bold;
+        }
+        #table-second_column {
+            background-color: aliceblue;
+            font-weight: bold;
+        }
+        #table-third_column {
+            background-color: #d6e9ff;
+            font-weight: bold;
+        }
+        #table-fourth_column {
+            background-color: aliceblue;
+            font-weight: bold;
+        }
+        #table-fourth_column2 {
+            border: 1px solid #523434;
+            padding: 10px;
+        }
+        #table-fifth_column {
+            background-color: #d6e9ff;
+            font-weight: bold;
+        }
+        #table-sixth_column {
+            background-color: aliceblue;
+            font-weight: bold;
+        }
+        #table-seventh_column {
+            background-color: #d6e9ff;
+            font-weight: bold;
+        }
+    </style>
     <title>Показать инцидент</title>
 </head>
 <body>
@@ -47,33 +82,57 @@
                 </div>
                 <div class="card-body" style="border: yellowgreen">
                     <table class="table table-bordered">
-                        <thead>
-                            <tr style="background-color: aliceblue">
-                                <th>Номер</th>
-                                <th>Название</th>
-                                <th>Описание</th>
-                                <th>Применённые статьи</th>
-                                <th>Создан</th>
-                                <th>Редактирован</th>
-                            </tr>
-                        </thead>
                         <tbody>
                             <tr>
+                                <td id="table-first_column" >Номер</td>
                                 <td th:text="${accident.id}"></td>
+                            </tr>
+                            <tr>
+                                <td id="table-second_column">Тип</td>
+                                <td th:text="${accident.type.name}"></td>
+                            </tr>
+                            <tr>
+                                <td id="table-third_column">Название</td>
                                 <td th:text="${accident.name}"></td>
-                                <td th:text="${accident.text}"></td>
+                            </tr>
+                            <tr>
+                                <td id="table-fourth_column">Описание</td>
+                                <td id="table-fourth_column2" th:text="${accident.text}"></td>
+                            </tr>
+                            <tr>
+                                <td id="table-fifth_column">Применённые статьи</td>
                                 <td th:text="${#strings.listJoin(accident.rules, ' , ')}"></td>
+                            </tr>
+                            <tr>
+                                <td id="table-sixth_column">Создан</td>
                                 <td th:text="${#temporals.format(accident.created, 'dd/MM/YY HH:mm')}"></td>
+                            </tr>
+                            <tr>
+                                <td id="table-seventh_column">Редактирован</td>
                                 <td th:text="${#temporals.format(accident.updated, 'dd/MM/YY HH:mm')}"></td>
                             </tr>
                         </tbody>
                     </table>
                     <br>
-                    <form th:unless="${deleteConfirm == null}" th:action="@{|/accidents/${accident.id}/delete|}" method="GET">
-                        <button type="submit" class="btn btn-secondary" style="float: left"> Удалить</button>
+                    <div th:unless="${deleteConfirm == null}">
+                        <div style="float: contour; text-align: center; color: indianred">
+                            <h4>Вы действительно хотите удалить инцидент?</h4>
+                        </div>
+                        <div style="float: left">
+                            <form th:action="@{|/accidents/${accident.id}/delete|}" method="GET">
+                                <button type="submit" class="btn btn-secondary"> Удалить</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div th:if="${deleteConfirm == null}"style="float: left">
+                    <form th:action="@{|/accidents/${accident.id}/edit|}" method="GET">
+                        <button type="submit" class="btn btn-secondary">Редактировать</button>
                     </form>
+                    </div>
+                    <div style="float: right">
                     <button th:text="${deleteConfirm == null}? ${'На главную'} : ${'Отмена'}"
-                            type="button" class="btn btn-secondary" style="float: right" onclick="window.location.href='/index'"></button>
+                            type="button" class="btn btn-secondary" onclick="window.location.href='/index'"></button>
+                    </div>
                 </div>
             </div>
         </div>

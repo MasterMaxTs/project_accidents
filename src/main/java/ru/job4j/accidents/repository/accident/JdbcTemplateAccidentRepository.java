@@ -13,10 +13,8 @@ import ru.job4j.accidents.model.Rule;
 
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Реализация доступа к хранилищу автоинцидентов с помощью JdbcTemplate
@@ -196,12 +194,11 @@ public class JdbcTemplateAccidentRepository implements AccidentRepository {
      * @param accidentId идентификатор автоинцидента
      * @return коллекцию уникальных объектов в виде статей нарушений
      */
-    private Set<Rule> getAccidentRulesFromDb(int accidentId) {
-        List<Rule> rulesInDb = jdbc.query(
-                                        Queries.FIND_ACCIDENTS_RULES_TABLE.sql,
-                                        new BeanPropertyRowMapper<>(Rule.class),
-                                        accidentId
+    private List<Rule> getAccidentRulesFromDb(int accidentId) {
+        return jdbc.query(
+                            Queries.FIND_ACCIDENTS_RULES_TABLE.sql,
+                            new BeanPropertyRowMapper<>(Rule.class),
+                            accidentId
         );
-        return new HashSet<>(rulesInDb);
     }
 }

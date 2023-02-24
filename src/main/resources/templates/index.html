@@ -43,12 +43,11 @@
         <table class="table table-striped" style="background-color: ghostwhite">
             <caption style="caption-side: top; text-align: right; font-weight: bold">Автоинциденты</caption>
             <thead class="table-danger">
-                <tr>
+                <tr style="text-align: center">
                     <th scope="col">id</th>
                     <th scope="col">Имя</th>
                     <th scope="col">Тип</th>
-                    <th scope="col">Описание</th>
-                    <th scope="col">Список статей</th>
+                    <th scope="col">Статьи</th>
                     <th scope="col">Адрес</th>
                     <th scope="col">Создан</th>
                     <th scope="col">Обновлён</th>
@@ -60,7 +59,6 @@
                     <th scope="row" th:text="${accident.id}"></th>
                     <td th:text="${accident.name}"></td>
                     <td th:text="${accident.type.name}"></td>
-                    <td th:text="${accident.text}"></td>
                     <td th:text="${#strings.listJoin(accident.rules, ' , ')}"></td>
                     <td th:text="${accident.address}"></td>
                     <td th:text="${#temporals.format(accident.created, 'dd/MM/YY HH:mm')}"></td>
@@ -72,11 +70,6 @@
                                     <td>
                                         <form th:action="@{|/accidents/${accident.id}|}" method="GET">
                                             <button type="submit" class="btn btn-secondary" >Открыть</button>
-                                        </form>
-                                    </td>
-                                    <td>
-                                        <form th:action="@{|/accidents/${accident.id}/edit|}" method="GET">
-                                            <button type="submit" class="btn btn-secondary">Редактировать</button>
                                         </form>
                                     </td>
                                     <td>

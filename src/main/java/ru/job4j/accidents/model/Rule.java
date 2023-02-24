@@ -2,6 +2,8 @@ package ru.job4j.accidents.model;
 
 import lombok.*;
 
+import javax.persistence.*;
+
 /**
  * Модель данных Статья нарушения
  */
@@ -9,11 +11,15 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Entity
+@Table(name = "rules")
 public class Rule {
 
     /**
      * Идентификатор статьи
      */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
     private int id;
 

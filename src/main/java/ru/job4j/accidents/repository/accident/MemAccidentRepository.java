@@ -35,20 +35,20 @@ public class MemAccidentRepository implements AccidentRepository {
                 "AccidentName1",
                 new AccidentType(1, "Две машины"),
                 "AccidentText1",
-                Set.of(new Rule(1, "Статья. 1")),
+                List.of(new Rule(1, "Статья. 1")),
                 "AccidentAddress1"));
         add(new Accident(
                 "AccidentName2",
                 new AccidentType(2, "Машина и человек"),
                 "AccidentText2",
-                Set.of(new Rule(2, "Статья. 2"),
+                List.of(new Rule(2, "Статья. 2"),
                        new Rule(3, "Статья. 3")),
                 "AccidentAddress2"));
         add(new Accident(
                 "AccidentName3",
                 new AccidentType(3, "Машина и велосипед"),
                 "AccidentText3",
-                Set.of(new Rule(4, "Статья. 4")),
+              List.of(new Rule(4, "Статья. 4")),
                 "AccidentAddress3"));
     }
 

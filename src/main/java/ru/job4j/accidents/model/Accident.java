@@ -2,8 +2,9 @@ package ru.job4j.accidents.model;
 
 import lombok.*;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Модель данных Автоинцидент
@@ -12,11 +13,15 @@ import java.util.Set;
 @NoArgsConstructor
 @RequiredArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Entity
+@Table(name = "accidents")
 public class Accident {
 
     /**
      * Идентификатор автоинцидента
      */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
     private int id;
 
@@ -30,6 +35,8 @@ public class Accident {
      * Тип автоинцидента
      */
     @NonNull
+    @ManyToOne
+    @JoinColumn(name = "type_id")
     private AccidentType type;
 
     /**
@@ -42,7 +49,17 @@ public class Accident {
      * Список статей автонарушений
      */
     @NonNull
-    private Set<Rule> rules;
+    @ManyToMany(
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+                    CascadeType.REFRESH, CascadeType.DETACH},
+            fetch = FetchType.EAGER
+    )
+    @JoinTable(
+            name = "accidents_rules",
+            joinColumns = @JoinColumn(name = "accident_id"),
+            inverseJoinColumns = @JoinColumn(name = "rule_id")
+    )
+    private List<Rule> rules;
 
     /**
      * Адрес

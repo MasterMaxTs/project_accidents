@@ -26,7 +26,7 @@ public class AccidentServiceImpl implements AccidentService {
      * бина реализации
      */
     public AccidentServiceImpl(
-            @Qualifier("jdbcTemplateAccidentRepository") AccidentRepository store) {
+            @Qualifier("hibernateAccidentRepository") AccidentRepository store) {
         this.store = store;
     }
 

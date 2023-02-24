@@ -8,7 +8,6 @@ import ru.job4j.accidents.repository.rule.RuleRepository;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -27,7 +26,7 @@ public class RuleServiceImpl implements RuleService {
      * @param store внедрение зависимости RuleRepository с уточнением
      * бина реализации
      */
-    public RuleServiceImpl(@Qualifier("jdbcTemplateRuleRepository")
+    public RuleServiceImpl(@Qualifier("hibernateRuleRepository")
                            RuleRepository store) {
         this.store = store;
     }
@@ -62,9 +61,9 @@ public class RuleServiceImpl implements RuleService {
     }
 
     @Override
-    public Set<Rule> getRulesFromIds(String[] rIds) {
+    public List<Rule> getRulesFromIds(String[] rIds) {
         return Arrays.stream(rIds)
                 .map(sid -> findById(Integer.parseInt(sid)))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 }
