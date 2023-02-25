@@ -6,7 +6,6 @@ import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
 import ru.job4j.accidents.model.Accident;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,7 +49,8 @@ public class HibernateAccidentRepository implements AccidentRepository {
     public List<Accident> findAll() {
         try (Session session = sf.openSession()) {
             return session.createQuery(
-                    "from Accident order by created desc, updated desc",
+                    "select distinct a from Accident a join fetch a.rules"
+                            + " order by a.created desc, a.updated desc",
                     Accident.class)
                     .list();
         }
@@ -59,9 +59,11 @@ public class HibernateAccidentRepository implements AccidentRepository {
     @Override
     public Optional<Accident> findById(int id) {
         try (Session session = sf.openSession()) {
-            return Optional.ofNullable(
-                    session.get(Accident.class, id)
-            );
+            return session.createQuery(
+                        "from Accident a join fetch a.rules where a.id = :fId",
+                    Accident.class)
+                    .setParameter("fId", id)
+                    .uniqueResultOptional();
         }
     }
 }
