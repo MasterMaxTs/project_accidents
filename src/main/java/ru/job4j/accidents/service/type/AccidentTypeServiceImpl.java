@@ -1,9 +1,9 @@
-package ru.job4j.accidents.service.accident.type;
+package ru.job4j.accidents.service.type;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.job4j.accidents.model.AccidentType;
-import ru.job4j.accidents.repository.accident.type.AccidentTypeRepository;
+import ru.job4j.accidents.repository.type.AccidentTypeRepository;
 
 import java.util.List;
 import java.util.NoSuchElementException;

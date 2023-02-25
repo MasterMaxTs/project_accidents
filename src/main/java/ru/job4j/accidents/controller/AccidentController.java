@@ -1,13 +1,13 @@
 package ru.job4j.accidents.controller;
 
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import ru.job4j.accidents.model.Accident;
 import ru.job4j.accidents.service.accident.AccidentService;
-import ru.job4j.accidents.service.accident.type.AccidentTypeService;
 import ru.job4j.accidents.service.rule.RuleService;
+import ru.job4j.accidents.service.type.AccidentTypeService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -17,15 +17,31 @@ import java.util.NoSuchElementException;
  * Контроллер автонарушений
  */
 @Controller
-@AllArgsConstructor
 public class AccidentController {
 
     /**
      * Ссылки на слои сервисов
      */
-    private AccidentService accidentService;
-    private AccidentTypeService accidentTypeService;
-    private RuleService ruleService;
+    private final AccidentService accidentService;
+    private final AccidentTypeService accidentTypeService;
+    private final RuleService ruleService;
+
+    /**
+     * Конструктор
+     * @param accidentService сервис автоинцидентов
+     * @param accidentTypeService сервис типов автоинцидентов
+     * @param ruleService сервис статей автонарушений
+     */
+    public AccidentController(@Qualifier("springDataAccidentService")
+                              AccidentService accidentService,
+                              @Qualifier("springDataAccidentTypeService")
+                              AccidentTypeService accidentTypeService,
+                              @Qualifier("springDataRuleService")
+                              RuleService ruleService) {
+        this.accidentService = accidentService;
+        this.accidentTypeService = accidentTypeService;
+        this.ruleService = ruleService;
+    }
 
     @ModelAttribute("user")
     public String getCurrentUserName() {
