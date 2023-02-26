@@ -3,7 +3,7 @@ package ru.job4j.accidents.service.type;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.job4j.accidents.model.AccidentType;
-import ru.job4j.accidents.repository.type.SpringDataAccidentTypeRepository;
+import ru.job4j.accidents.repository.type.AccidentTypeCrudRepository;
 
 import java.util.Comparator;
 import java.util.List;
@@ -14,13 +14,13 @@ import java.util.NoSuchElementException;
  */
 @Service
 @AllArgsConstructor
-public class SpringDataAccidentTypeService implements AccidentTypeService {
+public class AccidentTypeDataService implements AccidentTypeService {
 
     /**
      * Делегирование выполнения операций Spring Data при доступе к хранилищу
      * Типов автомобильных автоинцидентов
      */
-    private final SpringDataAccidentTypeRepository store;
+    private final AccidentTypeCrudRepository store;
 
     @Override
     public AccidentType add(AccidentType type) {

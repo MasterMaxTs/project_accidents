@@ -32,11 +32,11 @@ public class AccidentController {
      * @param accidentTypeService сервис типов автоинцидентов
      * @param ruleService сервис статей автонарушений
      */
-    public AccidentController(@Qualifier("springDataAccidentService")
+    public AccidentController(@Qualifier("accidentDataService")
                               AccidentService accidentService,
-                              @Qualifier("springDataAccidentTypeService")
+                              @Qualifier("accidentTypeDataService")
                               AccidentTypeService accidentTypeService,
-                              @Qualifier("springDataRuleService")
+                              @Qualifier("ruleDataService")
                               RuleService ruleService) {
         this.accidentService = accidentService;
         this.accidentTypeService = accidentTypeService;

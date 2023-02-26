@@ -6,6 +6,6 @@ import ru.job4j.accidents.model.Rule;
 /**
  * Доступ к хранилищу статей автонарушений c помощью Spring Data
  */
-public interface SpringDataRuleRepository
+public interface RuleCrudRepository
                                     extends CrudRepository<Rule, Integer> {
 }

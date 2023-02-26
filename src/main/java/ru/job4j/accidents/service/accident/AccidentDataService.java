@@ -3,7 +3,7 @@ package ru.job4j.accidents.service.accident;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.job4j.accidents.model.Accident;
-import ru.job4j.accidents.repository.accident.SpringDataAccidentRepository;
+import ru.job4j.accidents.repository.accident.AccidentCrudRepository;
 
 import java.util.Comparator;
 import java.util.List;
@@ -14,13 +14,13 @@ import java.util.NoSuchElementException;
  */
 @Service
 @AllArgsConstructor
-public class SpringDataAccidentService implements AccidentService {
+public class AccidentDataService implements AccidentService {
 
     /**
      * Делегирование выполнения операций Spring Data при доступе к хранилищу
      * Автомобильных инцидентов
      */
-    private final SpringDataAccidentRepository store;
+    private final AccidentCrudRepository store;
 
     @Override
     public Accident add(Accident accident) {
@@ -42,6 +42,7 @@ public class SpringDataAccidentService implements AccidentService {
     /**
      * Возвращает список всех автоинцидентов из БД, отсортированных по
      * локальному времени регистрации, далее по локальному времени обновления
+     * от позднего к раннему
      * @return отсортированный список всех автоинцидентов
      */
     @Override

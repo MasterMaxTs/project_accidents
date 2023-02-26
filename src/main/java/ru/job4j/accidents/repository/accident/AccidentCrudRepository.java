@@ -6,6 +6,6 @@ import ru.job4j.accidents.model.Accident;
 /**
  * Доступ к хранилищу автомобильных инцидентов c помощью Spring Data
  */
-public interface SpringDataAccidentRepository extends
+public interface AccidentCrudRepository extends
                                         CrudRepository<Accident, Integer> {
 }
