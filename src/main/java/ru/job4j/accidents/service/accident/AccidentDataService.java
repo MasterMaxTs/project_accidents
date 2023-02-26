@@ -48,10 +48,8 @@ public class AccidentDataService implements AccidentService {
     @Override
     public List<Accident> findAll() {
         return (List<Accident>) store.findAll(
-                Sort.by(List.of(
-                        Sort.Order.desc("created"),
-                        Sort.Order.desc("updated")
-                        ))
+                Sort.by("created").descending()
+                        .and(Sort.by("updated").descending())
         );
     }
 
