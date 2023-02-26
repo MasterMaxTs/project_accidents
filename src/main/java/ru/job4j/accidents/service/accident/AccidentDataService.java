@@ -1,11 +1,11 @@
 package ru.job4j.accidents.service.accident;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.job4j.accidents.model.Accident;
-import ru.job4j.accidents.repository.accident.AccidentCrudRepository;
+import ru.job4j.accidents.repository.accident.AccidentPagingAndSortingRepository;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -20,7 +20,7 @@ public class AccidentDataService implements AccidentService {
      * Делегирование выполнения операций Spring Data при доступе к хранилищу
      * Автомобильных инцидентов
      */
-    private final AccidentCrudRepository store;
+    private final AccidentPagingAndSortingRepository store;
 
     @Override
     public Accident add(Accident accident) {
@@ -47,13 +47,12 @@ public class AccidentDataService implements AccidentService {
      */
     @Override
     public List<Accident> findAll() {
-        List<Accident> rsl = (List<Accident>) store.findAll();
-        rsl.sort(
-                Comparator.comparing(Accident::getCreated).reversed()
-                        .thenComparing(
-                                Comparator.comparing(Accident::getUpdated).reversed()
-                        ));
-        return rsl;
+        return (List<Accident>) store.findAll(
+                Sort.by(List.of(
+                        Sort.Order.desc("created"),
+                        Sort.Order.desc("updated")
+                        ))
+        );
     }
 
     @Override

@@ -1,12 +1,12 @@
 package ru.job4j.accidents.service.rule;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.job4j.accidents.model.Rule;
-import ru.job4j.accidents.repository.rule.RuleCrudRepository;
+import ru.job4j.accidents.repository.rule.RulePagingAndSortingRepository;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -22,7 +22,7 @@ public class RuleDataService implements RuleService {
      * Делегирование выполнения операций Spring Data при доступе к хранилищу
      * Статей автонарушений
      */
-    private final RuleCrudRepository store;
+    private final RulePagingAndSortingRepository store;
 
     @Override
     public Rule add(Rule rule) {
@@ -47,9 +47,7 @@ public class RuleDataService implements RuleService {
      */
     @Override
     public List<Rule> findAll() {
-        List<Rule> rsl = (List<Rule>) store.findAll();
-        rsl.sort(Comparator.comparing(Rule::getName));
-        return rsl;
+        return (List<Rule>) store.findAll(Sort.by("name"));
     }
 
     @Override

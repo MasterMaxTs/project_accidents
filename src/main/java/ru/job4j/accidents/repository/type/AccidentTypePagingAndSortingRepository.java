@@ -1,11 +1,11 @@
 package ru.job4j.accidents.repository.type;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import ru.job4j.accidents.model.AccidentType;
 
 /**
  * Доступ к хранилищу типоа автомобильных инцидентов c помощью Spring Data
  */
-public interface AccidentTypeCrudRepository
-                            extends CrudRepository<AccidentType, Integer> {
+public interface AccidentTypePagingAndSortingRepository
+                    extends PagingAndSortingRepository<AccidentType, Integer> {
 }

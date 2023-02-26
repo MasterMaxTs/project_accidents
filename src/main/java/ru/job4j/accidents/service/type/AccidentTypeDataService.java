@@ -1,11 +1,11 @@
 package ru.job4j.accidents.service.type;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.job4j.accidents.model.AccidentType;
-import ru.job4j.accidents.repository.type.AccidentTypeCrudRepository;
+import ru.job4j.accidents.repository.type.AccidentTypePagingAndSortingRepository;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -20,7 +20,7 @@ public class AccidentTypeDataService implements AccidentTypeService {
      * Делегирование выполнения операций Spring Data при доступе к хранилищу
      * Типов автомобильных автоинцидентов
      */
-    private final AccidentTypeCrudRepository store;
+    private final AccidentTypePagingAndSortingRepository store;
 
     @Override
     public AccidentType add(AccidentType type) {
@@ -46,9 +46,7 @@ public class AccidentTypeDataService implements AccidentTypeService {
      */
     @Override
     public List<AccidentType> findAll() {
-        List<AccidentType> rsl = (List<AccidentType>) store.findAll();
-        rsl.sort(Comparator.comparing(AccidentType::getName));
-        return rsl;
+        return (List<AccidentType>) store.findAll(Sort.by("name"));
     }
 
     @Override
