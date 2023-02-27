@@ -1,6 +1,7 @@
 package ru.job4j.accidents.controller;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -43,9 +44,15 @@ public class AccidentController {
         this.ruleService = ruleService;
     }
 
-    @ModelAttribute("user")
-    public String getCurrentUserName() {
-        return "Maxim Tsurkanov";
+    /**
+     * Добавляет объект авторизовавшегося в приложении пользователя
+     * во все модели контроллера
+     * @param auth Authentication
+     * @return объект авторизовавшегося пользователя
+     */
+    @ModelAttribute
+    public Object user(Authentication auth) {
+        return auth.getPrincipal();
     }
 
     /**
@@ -55,7 +62,7 @@ public class AccidentController {
      */
     @GetMapping("/getAllAccidents")
     public ModelAndView getAll() {
-        return new ModelAndView("index")
+        return new ModelAndView("index/index")
                         .addObject("accidents", accidentService.findAll());
     }
 

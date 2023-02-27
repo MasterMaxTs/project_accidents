@@ -70,8 +70,8 @@
                 <a class="nav-link" href="#">Link</a>
             </li>
             <li class="nav-item">
-                <button type="button" class="btn btn-primary" onclick="window.location.href='#'">
-                    <span th:text="${'#'}"></span></button>
+                <button type="button" class="btn btn-primary" onclick="window.location.href='/logout'">
+                    <span th:text="${user.username + ' |Выйти'}"></span></button>
             </li>
         </ul>
         <br>
@@ -124,7 +124,7 @@
                             </form>
                         </div>
                     </div>
-                    <div th:if="${deleteConfirm == null}"style="float: left">
+                    <div th:if="${deleteConfirm == null}" style="float: left">
                     <form th:action="@{|/accidents/${accident.id}/edit|}" method="GET">
                         <button type="submit" class="btn btn-secondary">Редактировать</button>
                     </form>

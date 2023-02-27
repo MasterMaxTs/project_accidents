@@ -43,8 +43,8 @@
                 <a class="nav-link" href="#">Link</a>
             </li>
             <li class="nav-item">
-                <button type="button" class="btn btn-primary" onclick="window.location.href='#'">
-                    <span th:text="${'#'}"></span></button>
+                <button type="button" class="btn btn-primary" onclick="window.location.href='/logout'">
+                    <span th:text="${user.username + ' |Выйти'}"></span></button>
             </li>
         </ul>
         <br>
@@ -58,6 +58,7 @@
                     <form th:action="${doUpdate}? ${'/updateAccident'} : ${'/saveAccident'}" method="POST" enctype="multipart/form-data" th:object="${accident}">
                         <div class="form-group">
                             <div th:if="${doUpdate}">
+                                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                                 <input type="hidden" name="id" th:field="*{id}">
                                 <input type="hidden" name="created" th:field="*{created}">
                             </div>

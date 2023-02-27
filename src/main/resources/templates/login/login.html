@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .form_border {
+            width: 300px;
+            border: dimgray solid 1px;
+            border-radius: 10px 10px 10px 10px; background-color: #d6e9ff;
+            padding: 30px 20px;
+            margin: auto;
+        }
+        #error_msg {
+            color:red;
+            font-weight: bold;
+            margin: 30px 0;
+        }
+    </style>
+    <title>Аутентификация</title>
+</head>
+<body>
+    <br>
+    <div class="form_border">
+        <div th:unless="${errorMessage == null}">
+            <span id="error_msg" th:text="${errorMessage}"></span>
+            <br><br>
+        </div>
+        <form th:action="@{/login}" method="POST">
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            <table>
+                <tr>
+                    <td><label for="name">UserName:</label></td>
+                    <td><input type="text" id="name" name="username"/></td>
+                </tr>
+                <tr>
+                    <td><label for="pass">Password:</label></td>
+                    <td><input type="password" id="pass" name="password"></td>
+                </tr>
+            </table>
+            <br>
+            <input type="submit" value="Submit" style="margin-left: 130px"/>
+        </form>
+    </div>
+</body>
+</html>
