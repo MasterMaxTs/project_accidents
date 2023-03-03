@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin: 0 -50% 0 0;
+            transform: translate(-50%, -50%);
+            width: 500px;
+            border: dimgray solid 1px;
+            border-radius: 10px 10px 10px 10px; background-color: #d6e9ff;
+        }
+        #container_form {
+            padding: 0 30px;
+        }
+        #container_form_button {
+            margin-left: 45%;
+        }
+        #error_msg {
+            color:red;
+            font-weight: bold;
+            margin: 30px 0;
+            text-align: center;
+        }
+    </style>
+    <title>Регистрация</title>
+</head>
+<body>
+<br>
+<div class="container">
+    <div id="container_form">
+        <h4 style="text-align: center"><u>New User</u></h4>
+        <h5 th:unless="${errorMessage == null}" id="error_msg"
+            th:text="${errorMessage}" style="text-align: center"></h5>
+        <form th:action="@{/register}" method="POST" th:object="${user}">
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            <div class="form-group">
+                <table>
+                    <tr>
+                        <td><label for="name">Username</label></td>
+                        <td><input type="text" id="name" class="form-control"
+                                   placeholder="Input Username" th:field="*{username}" required/></td>
+                    </tr>
+                    <tr>
+                        <td><label for="password">Password</label></td>
+                        <td><input type="password" id="password"
+                                   placeholder="Input password" th:field="*{password}" required/></td>
+                    </tr>
+                </table>
+                <br>
+            </div>
+            <div id="container_form_button">
+                <button type="submit">Register</button>
+                <br><br>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

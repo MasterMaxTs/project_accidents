@@ -3,43 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <style>
-        .form_border {
-            width: 300px;
+        .container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin: 0 -50% 0 0;
+            transform: translate(-50%, -50%);
+            width: 350px;
             border: dimgray solid 1px;
             border-radius: 10px 10px 10px 10px; background-color: #d6e9ff;
-            padding: 30px 20px;
-            margin: auto;
+        }
+        #container_form {
+            padding: 0 30px;
+        }
+        #container_form_button {
+            padding: 20px;
+            margin-left: 25%;
         }
         #error_msg {
             color:red;
             font-weight: bold;
+            text-align: center;
             margin: 30px 0;
         }
     </style>
     <title>Аутентификация</title>
 </head>
 <body>
-    <br>
-    <div class="form_border">
-        <div th:unless="${errorMessage == null}">
-            <span id="error_msg" th:text="${errorMessage}"></span>
-            <br><br>
+    <div class="container">
+        <h6 style="text-align: center"><u>LOG IN or REGISTER</u></h6>
+        <h5 th:unless="${errorMessage == null}" id="error_msg" th:text="${errorMessage}"></h5>
+        <div id="container_form">
+            <form th:action="@{/login}" method="POST">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                <table>
+                    <tr>
+                        <td><label for="name">UserName:</label></td>
+                        <td><input type="text" id="name" name="username" placeholder="Input username" required/></td>
+                    </tr>
+                    <tr>
+                        <td><label for="pass">Password:</label></td>
+                        <td><input type="password" id="pass" name="password" placeholder="Input password" required></td>
+                    </tr>
+                </table>
+                    <div id="container_form_button">
+                        <input type="submit" value="Submit">&nbsp;&nbsp;
+                        <input type="button" value="Register" onclick="window.location.href='/register'"/>
+                    </div>
+
+            </form>
         </div>
-        <form th:action="@{/login}" method="POST">
-            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-            <table>
-                <tr>
-                    <td><label for="name">UserName:</label></td>
-                    <td><input type="text" id="name" name="username"/></td>
-                </tr>
-                <tr>
-                    <td><label for="pass">Password:</label></td>
-                    <td><input type="password" id="pass" name="password"></td>
-                </tr>
-            </table>
-            <br>
-            <input type="submit" value="Submit" style="margin-left: 130px"/>
-        </form>
     </div>
 </body>
 </html>

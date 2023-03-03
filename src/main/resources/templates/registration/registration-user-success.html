@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin: 0 -50% 0 0;
+            transform: translate(-50%, -50%);
+            width: 500px;
+            border: dimgray solid 1px;
+            border-radius: 10px 10px 10px 10px; background-color: #d6e9ff;
+        }
+        #container_form {
+            padding: 0 30px;
+            text-align: center;
+        }
+        #container_form_button {
+            margin: auto;
+        }
+    </style>
+    <title>Регистрация</title>
+</head>
+<body>
+<div class="container">
+    <div id="container_form">
+        <h4><u>Registration</u></h4>
+        <h4 th:text="${'Dear, ' + user.username + ' , you have successfully registered in the system!!'}"></h4>
+        <br>
+        <div id="container_form_button" >
+            <button type="button" class="btn btn-secondary" onclick="window.location.href='/login'"> Login</button>
+            <br><br>
+        </div>
+    </div>
+</div>
+</body>
+</html>
