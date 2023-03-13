@@ -14,6 +14,11 @@
             integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
             crossorigin="anonymous"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        .table_data_align{
+            text-align: center; vertical-align: middle;
+        }
+    </style>
     <title>Автомобильные инциденты</title>
 </head>
 <body>
@@ -26,24 +31,28 @@
                 <a class="nav-link" aria-current="page" href="#"><b>АВТОИНЦИДЕНТЫ</b></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link active" th:href="@{/getAllAccidents}">Инциденты</a>
+                <a class="nav-link" th:href="@{/index}">Инциденты</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" th:href="@{/createAccident}">Добавить инцидент</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Link</a>
+            <li th:if="${username == 'root'}" class="nav-item" >
+                <a class="nav-link active" th:href="@{/allQueued}">Очередь</a>
+            </li>
+            <li th:if="${username == 'root'}" class="nav-item">
+                <a class="nav-link" th:href="@{/allArchived}">Архив</a>
             </li>
             <li class="nav-item">
                 <button type="button" class="btn btn-primary" onclick="window.location.href='/logout'">
-                    <span th:text="${user.username + ' |Выйти'}"></span></button>
+                    <span th:text="${username + ' |Выйти'}"></span></button>
             </li>
         </ul>
         <br>
         <table class="table table-striped" style="background-color: ghostwhite">
-            <caption style="caption-side: top; text-align: right; font-weight: bold">Автоинциденты</caption>
+            <caption style="caption-side: top; text-align: right; font-weight: bold">Автоинциденты, ожидающие решения</caption>
             <thead class="table-danger">
                 <tr style="text-align: center">
+                    <th scope="col">user(id)</th>
                     <th scope="col">id</th>
                     <th scope="col">Имя</th>
                     <th scope="col">Тип</th>
@@ -52,42 +61,29 @@
                     <th scope="col">Создан</th>
                     <th scope="col">Обновлён</th>
                     <th scope="col">Действие</th>
+                    <th scope="col">Статус</th>
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="accident :${accidents}">
+                <tr th:each="accident :${accidents}" th:with="rules=${accident.rules}" class="table_data_align">
+                    <td th:text="${accident.user.id}"></td>
                     <th scope="row" th:text="${accident.id}"></th>
                     <td th:text="${accident.name}"></td>
                     <td th:text="${accident.type.name}"></td>
-                    <td th:text="${#strings.listJoin(accident.rules, ' , ')}"></td>
+                    <td th:text="${#lists.size(rules) == 0} ? ${'[......]'} : ${#strings.listJoin(rules, ' , ')}"></td>
                     <td th:text="${accident.address}"></td>
                     <td th:text="${#temporals.format(accident.created, 'dd/MM/YY HH:mm')}"></td>
                     <td th:text="${#temporals.format(accident.updated, 'dd/MM/YY HH:mm')}"></td>
                     <td>
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <form th:action="@{|/accidents/${accident.id}|}" method="GET">
-                                            <button type="submit" class="btn btn-secondary" >Открыть</button>
-                                        </form>
-                                    </td>
-                                    <td>
-                                        <form th:action="@{|/accidents/${accident.id}/delete/confirm|}" method="GET">
-                                        <button type="submit" class="btn btn-secondary">Удалить</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <form th:action="@{|/accidents/${accident.id}/edit|}" method="GET">
+                            <input type="hidden" name="status.id" value="3"/>
+                            <button type="submit" class="btn btn-light" >Рассмотреть</button>
+                        </form>
                     </td>
+                    <td><button type="button" class="btn btn-warning" th:text="${accident.status}"></button></td>
                 </tr>
             </tbody>
         </table>
-        <div style="float: left">
-            <button type="button" class="btn btn-success" onclick="window.location.href='/createAccident'">Создать</button>
-        </div>
-        <br>
     </div>
 </div>
 </body>

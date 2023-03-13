@@ -1,80 +1,116 @@
 package ru.job4j.accidents.repository.accident;
 
+import lombok.NoArgsConstructor;
 import net.jcip.annotations.ThreadSafe;
 import org.springframework.stereotype.Repository;
-import ru.job4j.accidents.model.Accident;
-import ru.job4j.accidents.model.AccidentType;
-import ru.job4j.accidents.model.Rule;
+import ru.job4j.accidents.model.*;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * Реализация потокобезопасного локального хранилища Автомобильных инцидентов
  */
 @Repository
+@NoArgsConstructor
 @ThreadSafe
 public class MemAccidentRepository implements AccidentRepository {
 
     /**
      * Хранилище в виде СoncurrentHashMap
      */
-    private final Map<Integer, Accident> accidents = new ConcurrentHashMap<>();
+    private final Map<String, List<Accident>> accidents = new ConcurrentHashMap<>();
     private final AtomicInteger atomicInteger = new AtomicInteger(1);
-
-    public MemAccidentRepository() {
-        init();
-    }
-
-    /**
-     * Инициализирует хранилище начальными данными
-     */
-    private void init() {
-        add(new Accident(
-                "AccidentName1",
-                new AccidentType(1, "Две машины"),
-                "AccidentText1",
-                List.of(new Rule(1, "Статья. 1")),
-                "AccidentAddress1"));
-        add(new Accident(
-                "AccidentName2",
-                new AccidentType(2, "Машина и человек"),
-                "AccidentText2",
-                List.of(new Rule(2, "Статья. 2"),
-                       new Rule(3, "Статья. 3")),
-                "AccidentAddress2"));
-        add(new Accident(
-                "AccidentName3",
-                new AccidentType(3, "Машина и велосипед"),
-                "AccidentText3",
-              List.of(new Rule(4, "Статья. 4")),
-                "AccidentAddress3"));
-    }
 
     @Override
     public Accident add(Accident accident) {
+        String userName = accident.getUser().getUsername();
         accident.setId(atomicInteger.getAndIncrement());
-        return accidents.putIfAbsent(accident.getId(), accident);
+        List<Accident> temp = new ArrayList<>();
+        accidents.compute(userName,
+                            (key, value) -> {
+                                                if (value == null) {
+                                                     value = temp;
+                                                }
+                                                value.add(accident);
+                                                return value;
+
+        });
+        return accident;
     }
 
     @Override
     public boolean update(Accident accident) {
-        return accidents.replace(accident.getId(), accident) != null;
+        String userName = accident.getUser().getUsername();
+        accidents.computeIfPresent(
+                userName,
+                    (key, value) -> {
+                                value.removeIf(a -> a.getId() == accident.getId());
+                                value.add(accident);
+                                return value;
+                    }
+            );
+        return true;
     }
 
     @Override
     public Accident delete(Accident accident) {
-        return accidents.remove(accident.getId());
+        String userName = accident.getUser().getUsername();
+        accidents.computeIfPresent(
+                userName,
+                    (key, value) -> {
+                        value.removeIf(a -> a.getId() == accident.getId());
+                        return value;
+                    }
+        );
+        return accident;
     }
 
     @Override
     public List<Accident> findAll() {
-        return new ArrayList<>(accidents.values());
+        return accidents.values()
+                .stream()
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
     }
 
     @Override
     public Optional<Accident> findById(int id) {
-        return Optional.ofNullable(accidents.get(id));
+        return accidents.values()
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(a -> a.getId() == id)
+                .findFirst();
+    }
+
+    @Override
+    public List<Accident> findAllByUserName(String userName) {
+        List<Accident> accidentsInMem = accidents.get(userName);
+        return accidentsInMem == null ? List.of() : new ArrayList<>(accidentsInMem);
+    }
+
+    @Override
+    public List<Accident> findAllQueued() {
+        return accidents.values()
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(a -> a.getStatus().getId() == QUEUE_STATUS_ID)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Accident> findAllArchived() {
+        return accidents.values()
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(a -> a.getStatus().getId() == ARCHIVE_STATUS_ID)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteAllArchived() {
+        findAllArchived().clear();
     }
 }

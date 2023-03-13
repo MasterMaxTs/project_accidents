@@ -17,6 +17,16 @@ import java.util.NoSuchElementException;
 public class AccidentDataService implements AccidentService {
 
     /**
+     * Константа id статуса 'Ожидание'
+     */
+    private static final int QUEUE_STATUS_ID = 2;
+
+    /**
+     * Константа id статуса 'Архив'
+     */
+    private static final int ARCHIVE_STATUS_ID = 5;
+
+    /**
      * Делегирование выполнения операций Spring Data при доступе к хранилищу
      * Автомобильных инцидентов
      */
@@ -35,21 +45,21 @@ public class AccidentDataService implements AccidentService {
 
     @Override
     public Accident delete(Accident accident) {
-        store.delete(accident);
+        store.deleteAccidentById(accident.getId());
         return accident;
     }
 
     /**
      * Возвращает список всех автоинцидентов из БД, отсортированных по
-     * локальному времени регистрации, далее по локальному времени обновления
-     * от позднего к раннему
+     * id статуса сопровождения, далее по локальному времени создания от
+     * позднего к раннему
      * @return отсортированный список всех автоинцидентов
      */
     @Override
     public List<Accident> findAll() {
         return (List<Accident>) store.findAll(
-                Sort.by("created").descending()
-                        .and(Sort.by("updated").descending())
+                Sort.by("status_id").ascending()
+                        .and(Sort.by("created").ascending())
         );
     }
 
@@ -59,5 +69,35 @@ public class AccidentDataService implements AccidentService {
                 () -> new NoSuchElementException(
                     String.format("Accident with id = %d not found in store", id)
                 ));
+    }
+
+    @Override
+    public Accident checkAccidentForStatus(int accidentId, int statusId) {
+        Accident rsl = null;
+        Accident accident = findById(accidentId);
+        if (statusId == accident.getStatus().getId()) {
+            rsl = accident;
+        }
+        return rsl;
+    }
+
+    @Override
+    public List<Accident> findAllByUserName(String userName) {
+        return store.findAllByUser(userName);
+    }
+
+    @Override
+    public List<Accident> findAllQueued() {
+        return store.findAllByStatus(QUEUE_STATUS_ID);
+    }
+
+    @Override
+    public List<Accident> findAllArchived() {
+        return store.findAllByStatus(ARCHIVE_STATUS_ID);
+    }
+
+    @Override
+    public void deleteAllArchived() {
+        store.deleteAllByStatus(ARCHIVE_STATUS_ID);
     }
 }

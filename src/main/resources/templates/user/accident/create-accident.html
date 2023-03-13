@@ -18,9 +18,6 @@
         .select-type {
             width: 300px;
         }
-        .select-rules {
-            width: 200px;
-        }
     </style>
     <title>Создать инцидент</title>
 </head>
@@ -34,34 +31,33 @@
                 <a class="nav-link" aria-current="page" href="#"><b>АВТОИНЦИДЕНТЫ</b></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" th:href="@{/getAllAccidents}">Инциденты</a>
+                <a class="nav-link" th:href="@{/index}">Инциденты</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link active" th:href="@{/createAccident}">Добавить инцидент</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Link</a>
+            <li th:if="${username == 'root'}" class="nav-item" >
+                <a class="nav-link" th:href="@{/allQueued}">Очередь</a>
+            </li>
+            <li th:if="${username == 'root'}" class="nav-item">
+                <a class="nav-link" th:href="@{/allArchived}">Архив</a>
             </li>
             <li class="nav-item">
                 <button type="button" class="btn btn-primary" onclick="window.location.href='/logout'">
-                    <span th:text="${user.username + ' |Выйти'}"></span></button>
+                    <span th:text="${username + ' |Выйти'}"></span></button>
             </li>
         </ul>
         <br>
-        <div th:with="doUpdate=${update != null}" class="row pt-3">
+        <div class="row pt-3">
             <div class="card" style="width: 70%; border-radius: 10px 10px 10px 10px">
                 <div class="card-header" style="border: lightslategray; background-color: burlywood">
-                    <span th:unless="${doUpdate}">Новый инцидент</span>
-                    <span th:if="${doUpdate}">Редактировать инцидент</span>
+                    <span>Новый инцидент</span>
                 </div>
                 <div class="card-body">
-                    <form th:action="${doUpdate}? ${'/updateAccident'} : ${'/saveAccident'}" method="POST" enctype="multipart/form-data" th:object="${accident}">
+                    <form th:action="@{/saveAccident}" method="POST" enctype="multipart/form-data" th:object="${accident}">
                         <div class="form-group">
-                            <div th:if="${doUpdate}">
-                                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                                <input type="hidden" name="id" th:field="*{id}">
-                                <input type="hidden" name="created" th:field="*{created}">
-                            </div>
+                            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                            <input type="hidden" name="username" th:value="${username}">
                             <label for="name">Имя</label>
                             <br><br>
                             <input type="text" id="name" class="form-control" style="width: 200px"
@@ -70,8 +66,6 @@
                             <label for="type.id">Тип</label>
                             <br><br>
                             <select class="select-type" id="type.id" name="type.id" required>
-                                <option th:if="${doUpdate}" th:text="${'Текущий тип: '}" style="background-color: lightcoral" disabled></option>
-                                <option th:if="${doUpdate}" th:text="${accident.type.name}" style="background-color:bisque" disabled></option>
                                 <option disabled>Выбрать&#8595;:</option>
                                 <option th:each="type :${types}" th:text="${type.name}" th:value="${type.id}"></option>
                             </select>
@@ -81,31 +75,18 @@
                             <textarea id="text" class="form-control" style="width: 600px; height: 300px"
                                       placeholder="Введите описание" th:field="*{text}" required></textarea>
                             <br><br>
-                            <label for="rIds">Статьи</label>
-                            <p>(для выбора нескольких статей, удерживайте Ctrl)</p>
-                            <br>
-                            <select class="select-rules" id="rIds" name="rIds" multiple size="7" required>
-                                <option th:if="${doUpdate}" th:text="${'Текущие статьи: '}" style="background-color: lightcoral" disabled></option>
-                                <option th:if="${doUpdate}" th:each="rule :${accident.rules}" th:text="${rule.name}" style="background-color:bisque" disabled></option>
-                                <option disabled>Выбрать&#8595;:</option>
-                                <option th:each="rule :${rules}" th:text="${rule.name}" th:value="${rule.id}"></option>
-                            </select>
-                            <br><br>
-                            <label for="address">Адрес</label>
+                            <label for="address">Адрес ДТП</label>
                             <br><br>
                             <input type="text" id="address" class="form-control" style="width: 400px"
                                    placeholder="Введите адрес" th:field="*{address}" required/>
-                            <br>
+                            <br><br>
                         </div>
-                        <div>
-                            <button th:unless="${doUpdate}" type="submit" class="btn btn-success">Сохранить</button>
-                            <button th:if="${doUpdate}" type="submit" class="btn btn-warning">Редактировать</button>
-                        </div>
+                        <button type="submit" class="btn btn-success">Сохранить</button>
                     </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 </body>
 </html>

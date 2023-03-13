@@ -14,7 +14,7 @@
             integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
             crossorigin="anonymous"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <title>Редактировать инцидент</title>
+    <title>Добавить в очередь</title>
 </head>
 <body>
 <br>
@@ -26,29 +26,42 @@
                 <a class="nav-link" aria-current="page" href="#"><b>АВТОИНЦИДЕНТЫ</b></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" th:href="@{/getAllAccidents}">Инциденты</a>
+                <a class="nav-link" th:href="@{/index}">Инциденты</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link active" th:href="@{/createAccident}">Добавить инцидент</a>
+                <a class="nav-link" th:href="@{/createAccident}">Добавить инцидент</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Link</a>
+            <li th:if="${username == 'root'}" class="nav-item" >
+                <a class="nav-link active" th:href="@{/allQueued}">Очередь</a>
+            </li>
+            <li th:if="${username == 'root'}" class="nav-item">
+                <a class="nav-link" th:href="@{/allArchived}">Архив</a>
             </li>
             <li class="nav-item">
                 <button type="button" class="btn btn-primary" onclick="window.location.href='/logout'">
-                    <span th:text="${user.username + ' |Выйти'}"></span></button>
+                    <span th:text="${username + ' |Выйти'}"></span></button>
             </li>
         </ul>
         <br>
         <div class="row pt-3">
             <div class="card" style="width: 70%; border-radius: 10px 10px 10px 10px">
-                <div class="card-header" style="border: lightslategray; background-color: yellowgreen">
-                    <span>Редактирование инцидента</span>
+                <div class="card-header" style="border: lightslategray; background-color: #fdb201">
+                    <span>Добавление в очередь</span>
                 </div>
-                <div class="card-body" style="border: yellowgreen">
-                    <h4 th:text="${'Информация об инциденте №' + accident.id + ' успешно обновлена!'}"></h4>
+                <div class="card-body">
+                    <h4 th:text="${'Инцидент №' + accident.id + ' добавлен в очередь на обработку!!'}" style="text-align: center"></h4>
+                    <h6><b>Название:</b></h6>
+                    <h6 th:text="${accident.name}"></h6>
+                    <h6><b>Тип:</b></h6>
+                    <h6 th:text="${accident.type.name}"></h6>
+                    <h6><b>Описание:</b></h6>
+                    <h6 th:text="${accident.text}"></h6>
+                    <h6><b>Адрес ДТП:</b></h6>
+                    <h6 th:text="${accident.address}"></h6>
+                    <h6><b>Локальное время создания:</b></h6>
+                    <h6 th:text="${#temporals.format(accident.created, 'dd/MM/YYYY HH:mm')}"></h6>
                     <br>
-                    <button type="button" class="btn btn-secondary" onclick="window.location.href='/index'"> На главную</button>
+                    <button type="button" class="btn btn-secondary" style="float: right" onclick="window.location.href='/index'"> На главную</button>
                 </div>
             </div>
         </div>

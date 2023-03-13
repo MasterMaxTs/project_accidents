@@ -14,4 +14,11 @@ public interface UserService extends Service<User> {
      * @return true, если пользователь найден в БД, иначе - false
      */
     boolean existsByUsername(String username);
+
+    /**
+     * Находит пользователя по имени
+     * @param username имя пользователя
+     * @return User
+     */
+    User findByUsername(String username);
 }

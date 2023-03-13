@@ -20,6 +20,12 @@ import java.util.Optional;
 public class JdbcTemplateAccidentTypeRepository implements AccidentTypeRepository {
 
     /**
+     * Объект JdbcTemplate
+     * @see ru.job4j.accidents.config.JdbcConfig
+     */
+    private final JdbcTemplate jdbc;
+
+    /**
      * Набор констант, содержащих SQL запросы к БД
      */
     @AllArgsConstructor
@@ -45,12 +51,6 @@ public class JdbcTemplateAccidentTypeRepository implements AccidentTypeRepositor
          */
         private final String sql;
     }
-
-    /**
-     * Объект JdbcTemplate
-     * @see ru.job4j.accidents.config.JdbcConfig
-     */
-    private final JdbcTemplate jdbc;
 
     @Override
     public AccidentType add(AccidentType type) {

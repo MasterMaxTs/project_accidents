@@ -20,6 +20,12 @@ import java.util.Optional;
 public class JdbcTemplateRuleRepository implements RuleRepository {
 
     /**
+     * Объект JdbcTemplate
+     * @see ru.job4j.accidents.config.JdbcConfig
+     */
+    private final JdbcTemplate jdbc;
+
+    /**
      * Набор констант, содержащих SQL запросы к БД
      */
     @AllArgsConstructor
@@ -45,12 +51,6 @@ public class JdbcTemplateRuleRepository implements RuleRepository {
          */
         private final String sql;
     }
-
-    /**
-     * Объект JdbcTemplate
-     * @see ru.job4j.accidents.config.JdbcConfig
-     */
-    private final JdbcTemplate jdbc;
 
     @Override
     public Rule add(Rule rule) {

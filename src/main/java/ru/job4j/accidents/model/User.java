@@ -3,6 +3,7 @@ package ru.job4j.accidents.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * Модель данных Пользователь
@@ -48,4 +49,13 @@ public class User {
                     CascadeType.REFRESH, CascadeType.DETACH})
     @JoinColumn(name = "authority_id")
     private Authority authority;
+
+    /**
+     * Список автоинцидентов пользователя
+     */
+    @OneToMany (
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
+            mappedBy = "user")
+    private List<Accident> accidents;
 }

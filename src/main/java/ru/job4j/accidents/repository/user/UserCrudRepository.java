@@ -14,4 +14,6 @@ public interface UserCrudRepository extends CrudRepository<User, Integer> {
      * @return true, если пользователь найден в БД, иначе - false
      */
     boolean existsByUsername(String username);
+
+    User findByUsername(String userName);
 }

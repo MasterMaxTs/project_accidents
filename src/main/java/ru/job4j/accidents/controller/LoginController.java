@@ -18,7 +18,8 @@ import javax.servlet.http.HttpServletResponse;
 public class LoginController {
 
     /**
-     * Возращает вид с данными для аутентификации
+     * Возращает вид-форму с для аутентификации,
+     * возвращает сообщение пользователю
      * @return вид по имени "login/login"
      */
     @GetMapping("/login")

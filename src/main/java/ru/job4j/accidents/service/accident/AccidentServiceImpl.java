@@ -26,7 +26,7 @@ public class AccidentServiceImpl implements AccidentService {
      * бина реализации
      */
     public AccidentServiceImpl(
-            @Qualifier("hibernateAccidentRepository") AccidentRepository store) {
+            @Qualifier("jdbcTemplateAccidentRepository") AccidentRepository store) {
         this.store = store;
     }
 
@@ -51,10 +51,43 @@ public class AccidentServiceImpl implements AccidentService {
     }
 
     @Override
+    public List<Accident> findAllByUserName(String userName) {
+        return store.findAllByUserName(userName);
+    }
+
+    @Override
+    public List<Accident> findAllQueued() {
+        return store.findAllQueued();
+    }
+
+    @Override
+    public List<Accident> findAllArchived() {
+        return store.findAllArchived();
+    }
+
+    @Override
+    public void deleteAllArchived() {
+        store.deleteAllArchived();
+    }
+
+    @Override
+    public Accident checkAccidentForStatus(int accidentId, int statusId) {
+        Accident rsl = null;
+        Accident accident = findById(accidentId);
+        if (statusId == accident.getStatus().getId()) {
+            rsl = accident;
+        }
+        return rsl;
+    }
+
+
+    @Override
     public Accident findById(int id) {
         return store.findById(id)
                 .orElseThrow(() -> new NoSuchElementException(
                         String.format("Accident with id = %d not found in store", id)
                 ));
     }
+
+
 }

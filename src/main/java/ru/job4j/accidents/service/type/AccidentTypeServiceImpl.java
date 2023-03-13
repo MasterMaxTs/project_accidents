@@ -25,7 +25,8 @@ public class AccidentTypeServiceImpl implements AccidentTypeService {
      * @param store внедрение зависимости AccidentTypeRepository с уточнением
      * бина реализации
      */
-    public AccidentTypeServiceImpl(@Qualifier("hibernateAccidentTypeRepository")
+    public AccidentTypeServiceImpl(@Qualifier(
+            "jdbcTemplateAccidentTypeRepository")
                                    AccidentTypeRepository store) {
         this.store = store;
     }

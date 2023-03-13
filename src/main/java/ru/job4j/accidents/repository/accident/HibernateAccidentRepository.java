@@ -29,7 +29,7 @@ public class HibernateAccidentRepository implements AccidentRepository {
     public boolean update(Accident accident) {
         try (Session session = sf.openSession()) {
             session.beginTransaction();
-            session.update(accident);
+            session.merge(accident);
             session.getTransaction().commit();
         }
         return true;
@@ -39,7 +39,8 @@ public class HibernateAccidentRepository implements AccidentRepository {
     public Accident delete(Accident accident) {
         try (Session session = sf.openSession()) {
             session.beginTransaction();
-            session.delete(accident);
+            Accident accidentInDb = session.get(Accident.class, accident.getId());
+            session.delete(accidentInDb);
             session.getTransaction().commit();
         }
         return accident;
@@ -49,10 +50,57 @@ public class HibernateAccidentRepository implements AccidentRepository {
     public List<Accident> findAll() {
         try (Session session = sf.openSession()) {
             return session.createQuery(
-                    "select distinct a from Accident a join fetch a.rules"
-                            + " order by a.created desc, a.updated desc",
+                    "select distinct a from Accident a left join fetch a.rules"
+                            + " order by a.status.id asc, a.created desc, a.updated desc",
                     Accident.class)
                     .list();
+        }
+    }
+
+    @Override
+    public List<Accident> findAllByUserName(String userName) {
+        try (Session session = sf.openSession()) {
+            return session.createQuery(
+            " select distinct a from Accident a left join fetch a.rules"
+                    + " where a.user.username =:fUsername"
+                    + " order by a.status.id asc, a.created desc, a.updated desc",
+                        Accident.class)
+                        .setParameter("fUsername", userName)
+                        .list();
+        }
+    }
+
+    @Override
+    public List<Accident> findAllQueued() {
+        try (Session session = sf.openSession()) {
+          return session.createQuery(
+                  "select distinct a from Accident a left join fetch a.rules"
+                          + " where a.status.id = :stId", Accident.class)
+                  .setParameter("stId", QUEUE_STATUS_ID)
+                  .list();
+        }
+    }
+
+    @Override
+    public List<Accident> findAllArchived() {
+        try (Session session = sf.openSession()) {
+            return session.createQuery(
+                    "select distinct a from Accident a left join fetch a.rules"
+                            + " where a.status.id = :stId"
+                            + " order by a.updated desc", Accident.class)
+                    .setParameter("stId", ARCHIVE_STATUS_ID)
+                    .list();
+        }
+    }
+
+    @Override
+    public void deleteAllArchived() {
+        try (Session session = sf.openSession()) {
+            session.beginTransaction();
+            session.createQuery(
+                    "delete from Accident a where a.status.id = " + ARCHIVE_STATUS_ID)
+                    .executeUpdate();
+            session.getTransaction().commit();
         }
     }
 
@@ -60,8 +108,8 @@ public class HibernateAccidentRepository implements AccidentRepository {
     public Optional<Accident> findById(int id) {
         try (Session session = sf.openSession()) {
             return session.createQuery(
-                        "from Accident a join fetch a.rules where a.id = :fId",
-                    Accident.class)
+                    "from Accident a left join fetch a.rules where a.id = :fId",
+                     Accident.class)
                     .setParameter("fId", id)
                     .uniqueResultOptional();
         }

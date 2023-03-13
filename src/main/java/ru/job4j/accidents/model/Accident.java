@@ -46,14 +46,18 @@ public class Accident {
     private String text;
 
     /**
+     * Автор инцидента
+     */
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @NonNull
+    private User user;
+
+    /**
      * Список статей автонарушений
      */
     @NonNull
-    @ManyToMany(
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-                    CascadeType.REFRESH, CascadeType.DETACH},
-            fetch = FetchType.LAZY
-    )
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "accidents_rules",
             joinColumns = @JoinColumn(name = "accident_id"),
@@ -76,5 +80,18 @@ public class Accident {
      * Локальное время обновления автонинцидента
      */
     private LocalDateTime updated;
+
+    /**
+     * Статус решения автоинцидента
+     */
+    @NonNull
+    @ManyToOne
+    @JoinColumn(name = "status_id")
+    private Status status;
+
+    /**
+     * Постановление о ДТП
+     */
+    private String resolution;
 
 }
