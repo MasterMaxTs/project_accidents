@@ -9,11 +9,9 @@ import ru.job4j.accidents.model.User;
 public interface UserCrudRepository extends CrudRepository<User, Integer> {
 
     /**
-     * Проверяет, существует ли пользователь в БД с указанным именем
-     * @param username имя пользователя
-     * @return true, если пользователь найден в БД, иначе - false
+     * Находит пользователя по имени
+     * @param userName имя пользователя
+     * @return User
      */
-    boolean existsByUsername(String username);
-
     User findByUsername(String userName);
 }

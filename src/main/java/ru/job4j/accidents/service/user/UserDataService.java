@@ -58,12 +58,7 @@ public class UserDataService implements UserService {
     }
 
     @Override
-    public boolean existsByUsername(String username) {
-        return store.existsByUsername(username);
-    }
-
-    @Override
-    public User findByUsername(String username) {
+    public User findByUserName(String username) {
         return store.findByUsername(username);
     }
 }

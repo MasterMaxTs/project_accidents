@@ -274,7 +274,7 @@ public class AccidentController {
                              @RequestParam("username") String userName) {
         accident.setType(accidentTypeService.findById(typeId));
         accident.setCreated(LocalDateTime.now());
-        accident.setUser(userService.findByUsername(userName));
+        accident.setUser(userService.findByUserName(userName));
         accident.setStatus(statusService.findById(1));
         accidentService.add(accident);
         System.out.println("Accident created successfully");
@@ -301,7 +301,7 @@ public class AccidentController {
         accident.setRules(ruleService.getRulesFromIds(request, "rIds"));
         accident.setUpdated(LocalDateTime.now());
         accident.setStatus(statusService.findById(statusId));
-        accident.setUser(userService.findByUsername(username));
+        accident.setUser(userService.findByUserName(username));
         accidentService.update(accident);
         System.out.println("Accident updated successfully");
         return new ModelAndView("user/accident/edit-accident-success");

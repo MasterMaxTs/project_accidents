@@ -9,16 +9,9 @@ import ru.job4j.accidents.service.Service;
 public interface UserService extends Service<User> {
 
     /**
-     * Проверяет, есть ли пользователь в БД с указанным именем
-     * @param username имя пользователя
-     * @return true, если пользователь найден в БД, иначе - false
-     */
-    boolean existsByUsername(String username);
-
-    /**
      * Находит пользователя по имени
      * @param username имя пользователя
      * @return User
      */
-    User findByUsername(String username);
+    User findByUserName(String username);
 }
