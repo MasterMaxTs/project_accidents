@@ -1,6 +1,7 @@
 package ru.job4j.accidents.service.user;
 
 import lombok.AllArgsConstructor;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.stereotype.Service;
 import ru.job4j.accidents.model.User;
 import ru.job4j.accidents.repository.user.UserCrudRepository;
@@ -23,7 +24,11 @@ public class UserDataService implements UserService {
 
     @Override
     public User add(User user) {
-        store.save(user);
+        try {
+            store.save(user);
+        } catch (ConstraintViolationException cve) {
+            throw new RuntimeException(cve);
+        }
         return user;
     }
 
@@ -55,5 +60,10 @@ public class UserDataService implements UserService {
     @Override
     public boolean existsByUsername(String username) {
         return store.existsByUsername(username);
+    }
+
+    @Override
+    public User findByUsername(String username) {
+        return store.findByUsername(username);
     }
 }

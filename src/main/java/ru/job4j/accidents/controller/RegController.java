@@ -18,41 +18,48 @@ import ru.job4j.accidents.service.user.UserService;
 @AllArgsConstructor
 public class RegController {
 
+    /**
+     * Ссылки на слои сервисов
+     */
     private final UserService userService;
     private final AuthorityService authorityService;
     private final PasswordEncoder encoder;
 
     /**
-     * Возращает вид для регистрации нового пользователя
+     * Возращает вид-форму для регистрации нового пользователя
      * @return вид по имени "registration/registration" с моделью User
      */
     @GetMapping("/register")
     public ModelAndView viewRegPage(@ModelAttribute User user) {
-        return new ModelAndView("registration/registration");
+        return new ModelAndView("user/registration/registration");
     }
 
     /**
-     * Производит регистрацию нового пользователя
+     * Производит регистрацию нового пользователя,
+     * возвращает сообщение пользователю в зависимости от результата
+     * процедуры регистрации
      * @param user User
-     * @return вид по имени "registration/registration-user-success" с моделью User
+     * @return вид по имени "registration/registration-user-success" с
+     * моделью User, если процедура регистрации прошла успешно,
+     * иначе вид по имени user/registration/registration
      */
     @PostMapping("/register")
     public ModelAndView regSave(@ModelAttribute User user) {
-        String userName = user.getUsername();
-        if (userService.existsByUsername(userName)) {
-            String message = String.format(
-                    "There is a user with name '%s' in the database,"
-                            + " set a different name!", userName);
-            return new ModelAndView("registration/registration")
-                    .addObject("errorMessage", message);
+        try {
+            user.setEnabled(true);
+            user.setAuthority(authorityService.findByAuthority("ROLE_USER"));
+            user.setPassword(encoder.encode(user.getPassword()));
+            userService.add(user);
+            System.out.printf("New user with id=%d has been registered "
+                    + "successfully", user.getId());
+        } catch (RuntimeException re) {
+            String errorMessage = String.format(
+                    "There is a user with name '%s' in the "
+                        + "database, set a different name!!", user.getUsername()
+            );
+            return new ModelAndView("user/registration/registration")
+                    .addObject("errorMessage", errorMessage);
         }
-        user.setEnabled(true);
-        user.setAuthority(authorityService.findByAuthority("ROLE_USER"));
-        user.setPassword(encoder.encode(user.getPassword()));
-        userService.add(user);
-        System.out.printf("New user with id=%d has been registered "
-                + "successfully", user.getId());
-        return new ModelAndView("registration/registration-user-success");
-
+        return new ModelAndView("user/registration/registration-user-success");
     }
 }
