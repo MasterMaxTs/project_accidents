@@ -90,7 +90,7 @@ public class AccidentController {
     @GetMapping("/getAllByUser")
     public ModelAndView getAllByUser(Model model) {
         String userName = (String) model.getAttribute("username");
-        return new ModelAndView("/user/index/index")
+        return new ModelAndView("user/index/index")
             .addObject("accidents", accidentService.findAllByUserName(userName));
     }
 
@@ -103,7 +103,7 @@ public class AccidentController {
      */
     @GetMapping("/allQueued")
     public ModelAndView getAllQueued() {
-        return new ModelAndView("/admin/accident/all-queued-accidents")
+        return new ModelAndView("admin/accident/all-queued-accidents")
             .addObject("accidents", accidentService.findAllQueued());
     }
 
@@ -116,7 +116,7 @@ public class AccidentController {
      */
     @GetMapping("/allArchived")
     public ModelAndView getAllArchived() {
-        return new ModelAndView("/admin/accident/all-archived-accidents")
+        return new ModelAndView("admin/accident/all-archived-accidents")
             .addObject("accidents", accidentService.findAllArchived());
     }
 
@@ -148,7 +148,7 @@ public class AccidentController {
         return accident == null
                 ? new ModelAndView("user/error/edit-accident-prohibition")
                      .addObject("id", id)
-                : new ModelAndView("/user/accident/edit-accident")
+                : new ModelAndView("user/accident/edit-accident")
                      .addObject("accident", accident)
                      .addObject("types", accidentTypeService.findAll());
     }

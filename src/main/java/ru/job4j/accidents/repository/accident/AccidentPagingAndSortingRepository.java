@@ -1,5 +1,6 @@
 package ru.job4j.accidents.repository.accident;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
@@ -36,6 +37,7 @@ public interface AccidentPagingAndSortingRepository extends
      * @param id идентификатор автоинцидента
      */
     @Transactional
+    @Modifying
     void deleteAccidentById(int id);
 
     /**
@@ -43,6 +45,7 @@ public interface AccidentPagingAndSortingRepository extends
      * @param statusId идентификатор статуса сопровождения автоинцидента
      */
     @Transactional
+    @Modifying
     @Query("delete from Accident a where a.status.id = :stId")
     void deleteAllByStatus(@Param("stId") int statusId);
 }

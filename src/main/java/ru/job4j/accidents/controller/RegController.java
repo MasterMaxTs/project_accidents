@@ -27,7 +27,7 @@ public class RegController {
 
     /**
      * Возращает вид-форму для регистрации нового пользователя
-     * @return вид по имени "registration/registration" с моделью User
+     * @return вид по имени "user/registration/registration" с моделью User
      */
     @GetMapping("/register")
     public ModelAndView viewRegPage(@ModelAttribute User user) {
