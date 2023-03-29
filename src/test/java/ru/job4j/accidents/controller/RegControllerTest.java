@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -11,7 +12,6 @@ import ru.job4j.accidents.Job4jAccidentsApplication;
 import ru.job4j.accidents.service.authority.AuthorityService;
 import ru.job4j.accidents.service.user.UserService;
 
-import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -31,16 +31,25 @@ class RegControllerTest {
     private MockMvc mockMvc;
 
     /**
+     * Сервис заглушек
+     */
+    @MockBean
+    private UserService userService;
+
+    @MockBean
+    private AuthorityService authorityService;
+
+    @MockBean
+    private PasswordEncoder passwordEncoder;
+
+    /**
      * Инициализация объекта-заглушки mockMvc до выполнения тестов
      */
     @BeforeEach
     public void whenSetUp() {
         this.mockMvc =
                 MockMvcBuilders.standaloneSetup(
-                        new RegController(
-                                mock(UserService.class),
-                                mock(AuthorityService.class),
-                                mock(PasswordEncoder.class)))
+                        new RegController(userService, authorityService, passwordEncoder))
                         .build();
     }
 
