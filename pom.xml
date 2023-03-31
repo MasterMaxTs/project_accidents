@@ -36,7 +36,7 @@
     </profile>
 
     <profile>
-      <id>production</id>
+      <id>prod</id>
       <properties>
         <liquibase.config>db/liquibase.properties</liquibase.config>
       </properties>
@@ -59,14 +59,6 @@
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
-
-    <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-      <version>2.1.214</version>
-      <scope>test</scope>
-    </dependency>
-
 
     <dependency>
       <groupId>org.projectlombok</groupId>
@@ -135,6 +127,11 @@
       <artifactId>spring-security-test</artifactId>
       <version>${spring.version}</version>
       <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
     </dependency>
 
   </dependencies>
