@@ -4,6 +4,7 @@ import lombok.NoArgsConstructor;
 import net.jcip.annotations.ThreadSafe;
 import org.springframework.stereotype.Repository;
 import ru.job4j.accidents.model.*;
+import ru.job4j.accidents.repository.status.StatusRepository;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -96,7 +97,7 @@ public class MemAccidentRepository implements AccidentRepository {
         return accidents.values()
                 .stream()
                 .flatMap(Collection::stream)
-                .filter(a -> a.getStatus().getId() == QUEUE_STATUS_ID)
+                .filter(a -> a.getStatus().getId() == StatusRepository.QUEUED_STATUS_ID)
                 .collect(Collectors.toList());
     }
 
@@ -105,7 +106,7 @@ public class MemAccidentRepository implements AccidentRepository {
         return accidents.values()
                 .stream()
                 .flatMap(Collection::stream)
-                .filter(a -> a.getStatus().getId() == ARCHIVE_STATUS_ID)
+                .filter(a -> a.getStatus().getId() == StatusRepository.ARCHIVED_STATUS_ID)
                 .collect(Collectors.toList());
     }
 

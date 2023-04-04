@@ -5,6 +5,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.job4j.accidents.model.Accident;
 import ru.job4j.accidents.repository.accident.AccidentPagingAndSortingRepository;
+import ru.job4j.accidents.repository.status.StatusRepository;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -15,16 +16,6 @@ import java.util.NoSuchElementException;
 @Service
 @AllArgsConstructor
 public class AccidentDataService implements AccidentService {
-
-    /**
-     * Константа id статуса 'Ожидание'
-     */
-    private static final int QUEUE_STATUS_ID = 2;
-
-    /**
-     * Константа id статуса 'Архив'
-     */
-    private static final int ARCHIVE_STATUS_ID = 5;
 
     /**
      * Делегирование выполнения операций Spring Data при доступе к хранилищу
@@ -88,16 +79,16 @@ public class AccidentDataService implements AccidentService {
 
     @Override
     public List<Accident> findAllQueued() {
-        return store.findAllByStatus(QUEUE_STATUS_ID);
+        return store.findAllByStatus(StatusRepository.QUEUED_STATUS_ID);
     }
 
     @Override
     public List<Accident> findAllArchived() {
-        return store.findAllByStatus(ARCHIVE_STATUS_ID);
+        return store.findAllByStatus(StatusRepository.ARCHIVED_STATUS_ID);
     }
 
     @Override
     public void deleteAllArchived() {
-        store.deleteAllByStatus(ARCHIVE_STATUS_ID);
+        store.deleteAllByStatus(StatusRepository.ARCHIVED_STATUS_ID);
     }
 }

@@ -11,16 +11,6 @@ import java.util.List;
 public interface AccidentRepository extends Repository<Accident> {
 
     /**
-     * Идентификатор статуса инцидента 'Ожидание'
-     */
-    int QUEUE_STATUS_ID = 2;
-
-    /**
-     * Идентификатор статуса инцидента 'Архив'
-     */
-    int ARCHIVE_STATUS_ID = 5;
-
-    /**
      * Возвращает список автоинцидентов пользователя
      * @param userName имя пользователя
      * @return список автоинцидентов пользователя

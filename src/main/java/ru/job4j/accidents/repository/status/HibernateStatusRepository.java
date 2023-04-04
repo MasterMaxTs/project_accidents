@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Repository
 @AllArgsConstructor
-public class HibernateStatusRepository implements StatusRepository {
+public class HibernateStatusRepository extends StatusRepository {
 
     private final SessionFactory sf;
 

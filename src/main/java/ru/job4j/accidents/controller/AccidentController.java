@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import ru.job4j.accidents.model.Accident;
+import ru.job4j.accidents.repository.status.StatusRepository;
 import ru.job4j.accidents.service.accident.AccidentService;
 import ru.job4j.accidents.service.rule.RuleService;
 import ru.job4j.accidents.service.status.StatusService;
@@ -144,7 +145,9 @@ public class AccidentController {
     @GetMapping("accidents/{accidentId}/check_status")
     public ModelAndView viewUpdateAccidentByUserAsResultOfStatusCheck(
                                         @PathVariable("accidentId") int id) {
-        Accident accident = accidentService.checkAccidentForStatus(id, 1);
+        Accident accident =
+                accidentService.checkAccidentForStatus(
+                        id, StatusRepository.ACCEPTED_STATUS_ID);
         return accident == null
                 ? new ModelAndView("user/error/edit-accident-prohibition")
                      .addObject("id", id)
@@ -275,7 +278,9 @@ public class AccidentController {
         accident.setType(accidentTypeService.findById(typeId));
         accident.setCreated(LocalDateTime.now());
         accident.setUser(userService.findByUserName(userName));
-        accident.setStatus(statusService.findById(1));
+        accident.setStatus(
+                statusService.findById(StatusRepository.ACCEPTED_STATUS_ID)
+        );
         accidentService.add(accident);
         System.out.println("Accident created successfully");
         return new ModelAndView("user/accident/create-accident-success");

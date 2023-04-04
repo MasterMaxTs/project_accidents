@@ -18,7 +18,7 @@ import java.util.Optional;
  */
 @Repository
 @AllArgsConstructor
-public class JdbcTemplateStatusRepository implements StatusRepository {
+public class JdbcTemplateStatusRepository extends StatusRepository {
 
     /**
      * Объект JdbcTemplate

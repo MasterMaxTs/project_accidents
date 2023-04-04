@@ -5,6 +5,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
 import ru.job4j.accidents.model.Accident;
+import ru.job4j.accidents.repository.status.StatusRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -76,7 +77,7 @@ public class HibernateAccidentRepository implements AccidentRepository {
           return session.createQuery(
                   "select distinct a from Accident a left join fetch a.rules"
                           + " where a.status.id = :stId", Accident.class)
-                  .setParameter("stId", QUEUE_STATUS_ID)
+                  .setParameter("stId", StatusRepository.QUEUED_STATUS_ID)
                   .list();
         }
     }
@@ -88,7 +89,7 @@ public class HibernateAccidentRepository implements AccidentRepository {
                     "select distinct a from Accident a left join fetch a.rules"
                             + " where a.status.id = :stId"
                             + " order by a.updated desc", Accident.class)
-                    .setParameter("stId", ARCHIVE_STATUS_ID)
+                    .setParameter("stId", StatusRepository.ARCHIVED_STATUS_ID)
                     .list();
         }
     }
@@ -98,7 +99,8 @@ public class HibernateAccidentRepository implements AccidentRepository {
         try (Session session = sf.openSession()) {
             session.beginTransaction();
             session.createQuery(
-                    "delete from Accident a where a.status.id = " + ARCHIVE_STATUS_ID)
+                    "delete from Accident a where a.status.id = "
+                            + StatusRepository.ARCHIVED_STATUS_ID)
                     .executeUpdate();
             session.getTransaction().commit();
         }

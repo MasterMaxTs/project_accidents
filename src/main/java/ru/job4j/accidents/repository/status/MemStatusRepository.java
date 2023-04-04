@@ -9,7 +9,7 @@ import java.util.*;
  * Реализация локального хранилища Статусов сопровождения автоинцидентов
  */
 @Repository
-public class MemStatusRepository implements StatusRepository {
+public class MemStatusRepository extends StatusRepository {
 
     /**
      * Список статусов в виде HashMap
@@ -27,11 +27,11 @@ public class MemStatusRepository implements StatusRepository {
      * Инициализация локального хранилища начальными данными
      */
     private void init() {
-        statuses.put(1, new Status(1, "Принят"));
-        statuses.put(2, new Status(2, "Ожидание"));
-        statuses.put(3, new Status(3, "Рассматривается"));
-        statuses.put(4, new Status(4, "Решён"));
-        statuses.put(5, new Status(5, "Архив"));
+        statuses.put(1, new Status(ACCEPTED_STATUS_ID, "Принят"));
+        statuses.put(2, new Status(QUEUED_STATUS_ID, "Ожидание"));
+        statuses.put(3, new Status(IN_WORKED_STATUS_ID, "Рассматривается"));
+        statuses.put(4, new Status(RESOLVED_STATUS_ID, "Решён"));
+        statuses.put(5, new Status(ARCHIVED_STATUS_ID, "Архив"));
     }
 
     @Override

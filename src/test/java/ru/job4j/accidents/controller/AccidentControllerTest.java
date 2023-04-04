@@ -2,6 +2,8 @@ package ru.job4j.accidents.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,18 +13,22 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.job4j.accidents.Job4jAccidentsApplication;
-import ru.job4j.accidents.model.Accident;
-import ru.job4j.accidents.model.Status;
+import ru.job4j.accidents.model.*;
+import ru.job4j.accidents.repository.status.StatusRepository;
 import ru.job4j.accidents.service.accident.AccidentService;
 import ru.job4j.accidents.service.rule.RuleService;
 import ru.job4j.accidents.service.status.StatusService;
 import ru.job4j.accidents.service.type.AccidentTypeService;
 import ru.job4j.accidents.service.user.UserService;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -61,6 +67,15 @@ class AccidentControllerTest {
 
     @MockBean
     private UserService userService;
+
+    @MockBean
+    private HttpServletRequest request;
+
+    /**
+     * Argument captor
+     */
+    @Captor
+    private ArgumentCaptor<Accident> captor;
 
     /**
      * Инициализация объекта-заглушки mockMvc до выполнения тестов
@@ -208,7 +223,7 @@ class AccidentControllerTest {
      */
     @Test
     @WithMockUser(username = "root", authorities = {"ROLE_ADMIN"})
-    void viewAddAccidentToQueueConfirm() throws Exception {
+    void whenAddAccidentToQueueShouldReturnPageForConfirmWithData() throws Exception {
         int accidentId = 1;
         Accident accidentInDb = new Accident();
         doReturn(accidentInDb).when(accidentService).findById(accidentId);
@@ -227,7 +242,7 @@ class AccidentControllerTest {
      */
     @Test
     @WithMockUser(username = "root", authorities = {"ROLE_ADMIN"})
-    void viewAddAccidentToArchiveConfirm() throws Exception {
+    void whenAddAccidentToArchiveShouldReturnPageForConfirmWithData() throws Exception {
         int accidentId = 1;
         Accident accidentInDb = new Accident();
         doReturn(accidentInDb).when(accidentService).findById(accidentId);
@@ -246,7 +261,7 @@ class AccidentControllerTest {
      */
     @Test
     @WithMockUser(username = "root", authorities = {"ROLE_ADMIN"})
-    void viewDeleteAccidentConfirm() throws Exception {
+    void whenDeleteAccidentShouldReturnPageForConfirmWithData() throws Exception {
         int accidentId = 1;
         Accident accidentInDb = new Accident();
         accidentInDb.setId(accidentId);
@@ -266,7 +281,7 @@ class AccidentControllerTest {
      */
     @Test
     @WithMockUser(username = "root", authorities = {"ROLE_ADMIN"})
-    void viewDeleteAllArchivedConfirm() throws Exception {
+    void whenDeleteAllAccidentsShouldReturnPageForConfirm() throws Exception {
         this.mockMvc.perform(get("/deleteAllArchived/confirm"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -280,7 +295,7 @@ class AccidentControllerTest {
      */
     @Test
     @WithMockUser(username = "root", authorities = {"ROLE_ADMIN"})
-    void viewUpdateAccidentByAdmin() throws Exception {
+    void whenUpdateAccidentByAdminShouldReturnPageForUpdateWithData() throws Exception {
         int accidentId = 1;
         int statusId = 2;
         Accident accidentInDb = new Accident();
@@ -307,7 +322,7 @@ class AccidentControllerTest {
      */
     @Test
     @WithMockUser(username = "user", authorities = {"ROLE_USER"})
-    void show() throws Exception {
+    void whenShowAccidentShouldReturnPageWithData() throws Exception {
         int accidentId = 1;
         Accident accidentInDb = new Accident();
         doReturn(accidentInDb).when(accidentService).findById(accidentId);
@@ -326,7 +341,7 @@ class AccidentControllerTest {
      */
     @Test
     @WithMockUser(username = "root", authorities = {"ROLE_ADMIN"})
-    void delete() throws Exception {
+    void whenAccidentIsSuccessfullyDeletedShouldReturnPageForInformWithData() throws Exception {
         int accidentId = 1;
         Accident accidentInDb = new Accident();
         doReturn(accidentInDb).when(accidentService).findById(accidentId);
@@ -345,10 +360,119 @@ class AccidentControllerTest {
      */
     @Test
     @WithMockUser(username = "root", authorities = {"ROLE_ADMIN"})
-    void deleteAllArchived() throws Exception {
+    void whenAllAccidentsAreSuccessfullyDeletedShouldReturnPageForInform() throws Exception {
         this.mockMvc.perform(get("/deleteAllArchived"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin/accident/delete-all-from-archive-success"));
+    }
+
+    /**
+     * Тест проверяет сценарий создания нового автоинцидента,
+     * авторизовавшимся в приложении пользователем в роли USER
+     */
+    @Test
+    @WithMockUser(username = "user", authorities = {"ROLE_USER"})
+    void whenCreateAccidentShouldReturnPageForInformAndVerifyPerformMethods() throws Exception {
+        int statusId = StatusRepository.ACCEPTED_STATUS_ID;
+        doReturn(new AccidentType(1, "two cars")).when(typeService).findById(1);
+        doReturn(new User("user", "pass")).when(userService).findByUserName("user");
+        doReturn(new Status(statusId, "accepted")).when(statusService).findById(statusId);
+        this.mockMvc.perform(
+                post("/saveAccident")
+                        .param("name", "new accident")
+                        .param("type.id", "1")
+                        .param("text", "description")
+                        .param("address", "accident address")
+                        .param("username", "user"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(
+                        view().name("user/accident/create-accident-success")
+                );
+        verify(typeService).findById(1);
+        verify(userService).findByUserName("user");
+        verify(statusService).findById(statusId);
+        verify(accidentService).add(captor.capture());
+        Accident value = captor.getValue();
+        assertThat(value.getName()).isEqualTo("new accident");
+        assertThat(value.getType().getName()).isEqualTo("two cars");
+        assertThat(value.getStatus().getName()).isEqualTo("accepted");
+        assertThat(value.getUser().getUsername()).isEqualTo("user");
+    }
+
+    /**
+     * Тест проверяет сценарий обновления автоинцидента,
+     * авторизовавшимся в приложении пользователем в роли USER
+     */
+    @Test
+    @WithMockUser(username = "root", authorities = {"ROLE_USER"})
+    void whenUpdateAccidentByUserShouldReturnPageForInformAndVerifyPerformMethods() throws Exception {
+        int statusId = StatusRepository.ACCEPTED_STATUS_ID;
+        doReturn(new AccidentType(1, "two cars")).when(typeService).findById(1);
+        doReturn(new Status(statusId, "accepted")).when(statusService).findById(statusId);
+        doReturn(new User("user", "pass")).when(userService).findByUserName("user");
+        this.mockMvc.perform(
+                        post("/updateAccident")
+                                .param("id", "1")
+                                .param("name", "corrected name")
+                                .param("type.id", "1")
+                                .param("text", "corrected description")
+                                .param("address", "accident address")
+                                .param("status.id", String.valueOf(statusId))
+                                .param("username", "user"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(
+                        view().name("user/accident/edit-accident-success")
+                );
+        verify(typeService).findById(1);
+        verify(statusService).findById(statusId);
+        verify(userService).findByUserName("user");
+        verify(accidentService).update(captor.capture());
+        Accident value = captor.getValue();
+        assertThat(value.getName()).isEqualTo("corrected name");
+        assertThat(value.getText()).isEqualTo("corrected description");
+    }
+
+    /**
+     * Тест проверяет сценарий обновления автоинцидента,
+     * авторизовавшимся в приложении пользователем в роли ADMIN
+     */
+    @Test
+    @WithMockUser(username = "root", authorities = {"ROLE_ADMIN"})
+    void whenUpdateAccidentByAdminShouldReturnPageForInformAndVerifyPerformMethods() throws Exception {
+        int statusId = StatusRepository.RESOLVED_STATUS_ID;
+        doReturn(new AccidentType(1, "two cars")).when(typeService).findById(1);
+        doReturn(List.of(
+                new Rule(1, "first rule"),
+                new Rule(3, "third rule")))
+                .when(ruleService).getRulesFromIds(request, "rIds");
+        doReturn(new Status(statusId, "resolved")).when(statusService).findById(statusId);
+        doReturn(new User("user", "pass")).when(userService).findByUserName("user");
+        this.mockMvc.perform(
+                        post("/updateAccident")
+                                .param("id", "1")
+                                .param("name", "accident name")
+                                .param("type.id", "1")
+                                .param("text", "description")
+                                .param("rIds", "1", "3")
+                                .param("resolution", "resolution")
+                                .param("address", "accident address")
+                                .param("status.id", String.valueOf(statusId))
+                                .param("username", "user"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(
+                        view().name("user/accident/edit-accident-success")
+                );
+        verify(typeService).findById(1);
+        verify(statusService).findById(statusId);
+        verify(userService).findByUserName("user");
+        verify(accidentService).update(captor.capture());
+        Accident value = captor.getValue();
+        assertThat(value.getName()).isEqualTo("accident name");
+        assertThat(value.getResolution()).isEqualTo("resolution");
+        assertThat(value.getStatus().getName()).isEqualTo("resolved");
     }
 }

@@ -7,5 +7,5 @@ import ru.job4j.accidents.model.Status;
  * Доступ к хранилищу Статусов сопровождения инцидентов c помощью Spring Data
  */
 public interface StatusPagingAndSortingRepository
-                        extends PagingAndSortingRepository<Status, Integer> {
+                    extends PagingAndSortingRepository<Status, Integer> {
 }
