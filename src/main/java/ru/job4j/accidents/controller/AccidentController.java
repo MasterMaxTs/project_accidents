@@ -1,22 +1,31 @@
 package ru.job4j.accidents.controller;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import ru.job4j.accidents.model.Accident;
-import ru.job4j.accidents.repository.status.StatusRepository;
+import ru.job4j.accidents.model.Document;
+import ru.job4j.accidents.model.TrackingStates;
 import ru.job4j.accidents.service.accident.AccidentService;
+import ru.job4j.accidents.service.document.DocumentService;
 import ru.job4j.accidents.service.rule.RuleService;
 import ru.job4j.accidents.service.status.StatusService;
 import ru.job4j.accidents.service.type.AccidentTypeService;
 import ru.job4j.accidents.service.user.UserService;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 /**
  * Контроллер автоинцидентов
@@ -32,6 +41,7 @@ public class AccidentController {
     private final RuleService ruleService;
     private final StatusService statusService;
     private final UserService userService;
+    private final DocumentService documentService;
 
     /**
      * Конструктор
@@ -40,6 +50,7 @@ public class AccidentController {
      * @param ruleService         сервис статей автонарушений
      * @param statusService       сервис статусов сопровождения автоинцидентов
      * @param userService         сервис пользователей
+     * @param documentService     сервис сопроводительных документов
      */
     public AccidentController(@Qualifier("accidentDataService")
                               AccidentService accidentService,
@@ -49,12 +60,14 @@ public class AccidentController {
                               RuleService ruleService,
                               @Qualifier("statusDataService")
                               StatusService statusService,
-                              UserService userService) {
+                              UserService userService,
+                              DocumentService documentService) {
         this.accidentService = accidentService;
         this.accidentTypeService = accidentTypeService;
         this.ruleService = ruleService;
         this.statusService = statusService;
         this.userService = userService;
+        this.documentService = documentService;
     }
 
     /**
@@ -147,13 +160,14 @@ public class AccidentController {
                                         @PathVariable("accidentId") int id) {
         Accident accident =
                 accidentService.checkAccidentForStatus(
-                        id, StatusRepository.ACCEPTED_STATUS_ID);
+                        id, TrackingStates.ACCEPTED_STATUS.getId());
         return accident == null
                 ? new ModelAndView("user/error/edit-accident-prohibition")
                      .addObject("id", id)
                 : new ModelAndView("user/accident/edit-accident")
                      .addObject("accident", accident)
-                     .addObject("types", accidentTypeService.findAll());
+                     .addObject("types", accidentTypeService.findAll())
+                     .addObject("documents", documentService.findAllByAccidentId(id));
     }
 
     /**
@@ -260,6 +274,7 @@ public class AccidentController {
         return new ModelAndView("admin/accident/edit-accident")
                     .addObject("accident", accident)
                     .addObject("types", accidentTypeService.findAll())
+                    .addObject("documents", documentService.findAllByAccidentId(accidentId))
                     .addObject("rules", ruleService.findAll());
     }
 
@@ -271,17 +286,19 @@ public class AccidentController {
      * @param userName имя пользователя
      * @return вид по имени user/accident/create-accident-success
      */
-    @PostMapping("/saveAccident")
+    @PostMapping(value = "/saveAccident", consumes = MULTIPART_FORM_DATA_VALUE)
     public ModelAndView save(@ModelAttribute Accident accident,
                              @RequestParam("type.id") int typeId,
-                             @RequestParam("username") String userName) {
+                             @RequestParam("username") String userName,
+                             @RequestParam("photo") MultipartFile[] files) {
         accident.setType(accidentTypeService.findById(typeId));
         accident.setCreated(LocalDateTime.now());
         accident.setUser(userService.findByUserName(userName));
         accident.setStatus(
-                statusService.findById(StatusRepository.ACCEPTED_STATUS_ID)
+                statusService.findById(TrackingStates.ACCEPTED_STATUS.getId())
         );
-        accidentService.add(accident);
+        documentService.saveAccidentDocumentsFromRequest(files,
+                                accidentService.add(accident), getUsername());
         System.out.println("Accident created successfully");
         return new ModelAndView("user/accident/create-accident-success");
     }
@@ -293,21 +310,23 @@ public class AccidentController {
      * @param typeId идентификатор типа автоинцидента
      * @param username имя пользователя
      * @param statusId статус сопровождения автоинцидента
-     * @param request HttpServletRequest
+     * @param rIds строковый массив из идентификаторов статей автонарушений
      * @return вид по имени user/accident/edit-accident-success
      */
-    @PostMapping("/updateAccident")
+    @PostMapping(value = "/updateAccident", consumes = MULTIPART_FORM_DATA_VALUE)
     public ModelAndView update(@ModelAttribute Accident accident,
                                @RequestParam("type.id") int typeId,
                                @RequestParam("username") String username,
                                @RequestParam("status.id") int statusId,
-                               HttpServletRequest request) {
+                               @RequestParam(value = "photo", required = false) MultipartFile[] files,
+                               @RequestParam(value = "rIds", required = false) String[] rIds) {
         accident.setType(accidentTypeService.findById(typeId));
-        accident.setRules(ruleService.getRulesFromIds(request, "rIds"));
+        accident.setRules(ruleService.getRulesFromIds(rIds));
         accident.setUpdated(LocalDateTime.now());
         accident.setStatus(statusService.findById(statusId));
         accident.setUser(userService.findByUserName(username));
         accidentService.update(accident);
+        documentService.saveAccidentDocumentsFromRequest(files, accident, getUsername());
         System.out.println("Accident updated successfully");
         return new ModelAndView("user/accident/edit-accident-success");
     }
@@ -320,7 +339,8 @@ public class AccidentController {
     @GetMapping("/accidents/{accidentId}")
     public ModelAndView show(@PathVariable("accidentId") int id) {
         return new ModelAndView("user/accident/show-accident")
-                    .addObject("accident", accidentService.findById(id));
+                    .addObject("accident", accidentService.findById(id))
+                    .addObject("documents", documentService.findAllByAccidentId(id));
     }
 
     /**
@@ -332,6 +352,7 @@ public class AccidentController {
     @GetMapping("/accidents/{accidentId}/delete")
     public ModelAndView delete(@PathVariable("accidentId") int id) {
         Accident accident = accidentService.findById(id);
+        documentService.deleteAllByAccidentId(id);
         accidentService.delete(accident);
         System.out.println("Accident deleted successfully");
         return new ModelAndView("admin/accident/delete-from-archive-success")
@@ -345,8 +366,61 @@ public class AccidentController {
      */
     @GetMapping("/deleteAllArchived")
     public ModelAndView deleteAllArchived() {
+        documentService.deleteAllByStatusId(TrackingStates.ARCHIVED_STATUS.getId());
         accidentService.deleteAllArchived();
         System.out.println("Car incidents archive successfully cleared!");
         return new ModelAndView("admin/accident/delete-all-from-archive-success");
+    }
+
+    /**
+     * Возвращает вид для отображения сопроводительного документа пользователю
+     * @param documentId идентификатор документа
+     * @return вид по имени user/accident/show-accident-document с данными
+     */
+    @GetMapping("documents/{documentId}/show")
+    public ModelAndView viewShowDocument(@PathVariable("documentId") int documentId) {
+        return new ModelAndView("user/accident/show-accident-document")
+                .addObject("document", documentService.findById(documentId));
+    }
+
+    /**
+     * Загружает на страницу вида автоинцидента изображение
+     * сопроводительного документа
+     * @param id идентификатор документа
+     * @return ResponseEntity
+     */
+    @GetMapping("/documents/{documentId}/download")
+    public ResponseEntity<Resource> downloadDocument(@PathVariable("documentId") int id) {
+        Document documentInDb = documentService.findById(id);
+            return ResponseEntity.ok()
+                    .headers(new HttpHeaders())
+                    .contentLength(documentInDb.getData().length)
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(new ByteArrayResource(documentInDb.getData()));
+    }
+
+    /**
+     * Возвращает вид-предупреждение пользователю об удалении
+     * сопроводительного документа из автоинцидента
+     * @param documentId идентификатор документа
+     * @return вид по имени "user/accident/delete-accident-document-confirm"
+     */
+    @GetMapping("/documents/{documentId}/delete/confirm")
+    public ModelAndView viewDeleteDocumentConfirm(@PathVariable("documentId") int documentId) {
+        return new ModelAndView("user/accident/delete-accident-document-confirm")
+                .addObject("document", documentService.findById(documentId));
+    }
+
+    /**
+     * Удаляет сопроводительный документ из хранилища по id документа
+     * @param documentId идентификатор сопроводительного документа
+     * @return вид по имени user/accident/delete-accident-document-success.html
+     */
+    @GetMapping("/documents/{documentId}/delete")
+    public ModelAndView deleteDocument(@PathVariable("documentId") int documentId) {
+        Document documentInDb = documentService.findById(documentId);
+        documentService.delete(documentInDb);
+        return new ModelAndView("user/accident/delete-accident-document-success.html")
+                .addObject("document", documentInDb);
     }
 }

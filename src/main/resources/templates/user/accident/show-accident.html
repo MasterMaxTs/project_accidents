@@ -51,6 +51,12 @@
         #table-tenth_column {
             background-color: aliceblue; font-weight: bold;
         }
+        #table-eleventh_column {
+            background-color: #d6e9ff; font-weight: bold;
+        }
+        #table-twelfth_column {
+            background-color: aliceblue; font-weight: bold;
+        }
         #status_id1 {
             color: cadetblue; font-weight: bold; border: dimgray solid 1px; border-radius: 5px 5px 5px 5px; padding: 5px;
         }
@@ -99,7 +105,7 @@
         <div class="row pt-3">
             <div th:with="status_id=${accident.status.id}" class="card" style="width: 70%; border-radius: 10px 10px 10px 10px">
                 <div th:unless="${status_id == 4}" class="card-header" style="border: lightslategray; background-color: burlywood">
-                    <span>Просмотр инцидента</span>
+                    <span th:text="${'Просмотр инцидента №-' + accident.id}"></span>
                 </div>
                 <div th:if="${status_id == 4}" class="card-header" style="border: lightslategray; background-color: #007e32">
                     <span th:text="${'Уважаемый, ' + username + ' , ваш инцидент решён!!'}"></span>
@@ -135,24 +141,47 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td id="table-seventh_column"><label for="text">Адрес ДТП</label></td>
+                                <td id="table-seventh_column"><label for="text">Прикреплённые документы участниками ДТП</label></td>
+                                <td>
+                                    <div th:each="document : ${documents}" th:unless="${document.author == 'root'}">
+                                        <a th:href="@{|/documents/${document.id}/show|}" title="открыть">
+                                            <span th:text="${document.fileName}"></span>
+                                        </a>
+                                        <a th:href="@{|/documents/${document.id}/delete/confirm|}">
+                                            <i th:if="${accident.status.id == 1}" class="fa fa-window-close-o" style="color: #930303" aria-hidden="true" title="удалить"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td id="table-eighth_column"><label for="text">Вложенные документы инспектором ДПС</label></td>
+                                <td>
+                                    <div th:each="document : ${documents}" th:if="${document.author == 'root'}">
+                                        <a th:href="@{|/documents/${document.id}/show|}" title="открыть">
+                                            <span th:text="${document.fileName}"></span>
+                                        </a>
+                                    </div>
+                            </td>
+                            </tr>
+                            <tr>
+                                <td id="table-ninth_column"><label for="text">Адрес ДТП</label></td>
                                 <td th:text="${accident.address}"></td>
                             </tr>
                             <tr>
-                                <td id="table-eighth_column"><label for="rules">Применённые статьи</label></td>
+                                <td id="table-tenth_column"><label for="rules">Применённые статьи</label></td>
                                 <td>
                                     <textarea th:text="${#lists.size(accident.rules) == 0} ? '[......]' : ${#strings.listJoin(accident.rules, ' ; ')}"
                                               id="rules" rows="4" cols="30" readonly ></textarea>
                                 </td>
                             </tr>
                             <tr>
-                                <td id="table-ninth_column"><label for="res">Вынесенное постановление</label></td>
+                                <td id="table-eleventh_column"><label for="res">Вынесенное постановление</label></td>
                                 <td>
-                                    <textarea th:text="${accident.resolution}" id="res" rows="6" cols="60" readonly ></textarea>
+                                    <textarea th:text="${accident.resolution == null} ? '[......]' : ${accident.resolution}" id="res" rows="6" cols="60" readonly ></textarea>
                                 </td>
                             </tr>
                             <tr>
-                                <td id="table-tenth_column">Статус</td>
+                                <td id="table-twelfth_column">Статус</td>
                                 <td>
                                     <div th:with="status_name=${accident.status.name}">
                                         <span th:if="${status_id == 1}" th:text="${status_name}" id="status_id1"></span>
@@ -166,13 +195,17 @@
                         </tbody>
                     </table>
                     <br>
-                    <div th:unless="${status_id == 4 or status_id == 5}">
-                    <form th:action="@{|/accidents/${accident.id}/check_status|}" method="GET">
-                        <button type="submit" class="btn btn-warning">Редактировать</button>
-                    </form>
-                    </div>
-                    <div style="float: right">
-                    <button type="button" class="btn btn-secondary" onclick="window.location.href='/index'">На главную</button>
+                    <div style="margin: 10px 30px 10px">
+                        <div style="float: left" th:unless="${status_id == 4 or status_id == 5}">
+                            <form th:action="@{|/accidents/${accident.id}/check_status|}" method="GET">
+                                <button type="submit" class="btn btn-warning">Редактировать</button>
+                            </form>
+                        </div>
+                        <div style="float: right">
+                            <form th:action="@{/index}" method="GET">
+                                <button type="submit" class="btn btn-secondary">На главную</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>

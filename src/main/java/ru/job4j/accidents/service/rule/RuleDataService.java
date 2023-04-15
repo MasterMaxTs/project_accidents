@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import ru.job4j.accidents.model.Rule;
 import ru.job4j.accidents.repository.rule.RulePagingAndSortingRepository;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -61,11 +61,10 @@ public class RuleDataService implements RuleService {
     }
 
     @Override
-    public List<Rule> getRulesFromIds(HttpServletRequest req, String parameter) {
-        String[] ruleIds = req.getParameterValues(parameter);
-        return ruleIds == null ? List.of()
-                : Arrays.stream(ruleIds)
-                .map(sid -> findById(Integer.parseInt(sid)))
-                .collect(Collectors.toList());
+    public List<Rule> getRulesFromIds(String[] rulesIDs) {
+        return rulesIDs == null ? Collections.emptyList()
+                : Arrays.stream(rulesIDs)
+                        .map(sid -> findById(Integer.parseInt(sid)))
+                        .collect(Collectors.toList());
     }
 }

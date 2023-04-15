@@ -14,6 +14,28 @@
             integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
             crossorigin="anonymous"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script type='text/javascript'>
+        var i = 0;
+        function addFields(){
+        i++;
+        newParagraphField();
+        newInputField();
+        container.appendChild(document.createElement('br'));
+        }
+        function newParagraphField(){
+        var p = document.createElement('p');
+        p.textContent = i + 1 + ' фото:';
+        container.appendChild(p);
+        }
+        function newInputField(){
+        var input = document.createElement('input');
+        input.type = 'file';
+        input.name = 'photo';
+        input.required = true;
+        container.appendChild(input);
+        container.appendChild(document.createElement('br'));
+    }
+    </script>
     <style>
         .select-type {
             width: 300px;
@@ -22,7 +44,7 @@
             width: 200px;
         }
     </style>
-    <title>Создать инцидент</title>
+    <title>Редактировать инцидент</title>
 </head>
 <body>
 <br>
@@ -54,7 +76,8 @@
         <div class="row pt-3">
             <div class="card" style="width: 70%; border-radius: 10px 10px 10px 10px">
                 <div class="card-header" style="border: lightslategray; background-color: burlywood">
-                    <span th:text="${accident.status.id == 2 ? 'Редактировать инцидент (добавлен в очередь)' : 'Редактировать инцидент'}"></span>
+                    <span th:text="${accident.status.id == 2 ? 'Редактировать инцидент №-' + accident.id + ' (добавлен в очередь)'
+                        : 'Редактировать инцидент №-' + accident.id}"></span>
                 </div>
                 <div class="card-body" th:with="username=${accident.user.username}">
                     <form th:action="@{/updateAccident}" method="POST" enctype="multipart/form-data" th:object="${accident}">
@@ -63,48 +86,82 @@
                             <input type="hidden" name="id" th:field="*{id}">
                             <input type="hidden" name="username" th:value="${username}">
                             <input type="hidden" name="created" th:field="*{created}">
-                            <label for="author">Автор инцидента</label>
+                            <label for="author"><b>Автор инцидента</b></label>
                             <br><br>
                             <input type="text" id="author" class="form-control" style="width: 200px"
                                     th:value="${username + ' (id-' + accident.user.id +')'}" disabled/>
                             <br><br>
-                            <label for="name">Имя</label>
+                            <label for="name"><b>Имя</b></label>
                             <br><br>
                             <input type="text" id="name" class="form-control" style="width: 200px"
                                    placeholder="Введите имя" th:field="*{name}" required/>
                             <br><br>
-                            <label for="type.id">Тип</label>
+                            <label for="type.id"><b>Тип</b></label>
                             <br><br>
-                            <select class="select-type" id="type.id" name="type.id" required>
+                            <select class="select-type" id="type.id" name="type.id" size="7" required>
                                 <option th:text="${'Текущий тип: '}" style="background-color: lightcoral" disabled></option>
-                                <option th:text="${accident.type.name}" style="background-color:bisque" disabled></option>
+                                <option th:text="${accident.type.name}" th:value="${accident.type.id}" style="background-color:bisque" readonly></option>
                                 <option disabled>Выбрать&#8595;:</option>
                                 <option th:each="type :${types}" th:text="${type.name}" th:value="${type.id}"></option>
                             </select>
                             <br><br>
-                            <label for="text">Описание</label>
+                            <label for="text"><b>Описание</b></label>
                             <br><br>
                             <textarea id="text" class="form-control" placeholder="Введите описание"
                                       th:field="*{text}" rows="6" cols="80" required></textarea>
                             <br><br>
-                            <label for="address">Адрес ДТП</label>
+                            <label for="photo"><b>Фото с места происшествия</b></label>
+                            <br><br>
+                            <div id="photo" class="form-control" style="padding: 20px">
+                                <div>
+                                    <h6><em>Загруженные документы участниками ДТП&#8595;:</em></h6>
+                                    <div th:each="document: ${documents}" th:unless="${document.author == 'root'}">
+                                        <a th:href="@{|/documents/${document.id}/show|}" title="открыть">
+                                            <span th:text="${document.fileName}"></span>
+                                        </a>
+                                    </div>
+                                </div>
+                                <br><br>
+                                <div>
+                                    <h6><em>Загруженные документы инспектором ДПС&#8595;:</em></h6>
+                                    <div th:each="document: ${documents}" th:if="${document.author == 'root'}">
+                                        <a th:href="@{|/documents/${document.id}/show|}" title="открыть">
+                                            <span th:text="${document.fileName}"></span>
+                                        </a>
+                                        <a th:href="@{|/documents/${document.id}/delete/confirm|}">
+                                            <i class="fa fa-window-close-o" style="color: #930303" aria-hidden="true" title="удалить"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <br><br>
+                                <div>
+                                    <h6>Добавить дополнительное фото (максимальный размер 1Мб)</h6>
+                                    <br>
+                                    <input type="file" name="photo"/>
+                                    <br><br>
+                                    <div id="container"></div>
+                                    <button onclick="addFields()" >Добавить ещё</button>
+                                </div>
+                            </div>
+                            <br><br>
+                            <label for="address"><b>Адрес ДТП</b></label>
                             <br><br>
                             <input type="text" id="address" class="form-control" style="width: 400px"
                                    placeholder="Введите адрес" th:field="*{address}" required/>
                             <br><br>
-                            <label for="rIds">Статьи</label>
+                            <label for="rIds"><b>Статьи</b></label>
                             <p>(для выбора нескольких статей, удерживайте Ctrl)</p>
                             <br>
-                            <select class="select-rules" id="rIds" name="rIds" multiple size="7" required>
+                            <select class="select-rules" id="rIds" name="rIds" multiple size="9" required>
                                 <option th:text="${'Текущие статьи: '}" style="background-color: lightcoral" disabled></option>
-                                <option th:each="rule :${accident.rules}" th:text="${rule.name}" style="background-color:bisque" disabled></option>
+                                <option th:each="rule :${accident.rules}" th:text="${rule.name}" th:value="${rule.id}" style="background-color:bisque" readonly></option>
                                 <option disabled>Выбрать&#8595;:</option>
                                 <option th:each="rule :${rules}" th:text="${rule.name}" th:value="${rule.id}"></option>
                             </select>
                             <br><br>
-                            <label for="resolution">Вынести постановление</label>
+                            <label for="resolution"><b>Вынести постановление</b></label>
                             <br><br>
-                            <textarea id="resolution" th:field="*{resolution}" rows="6" cols="80" required></textarea>
+                            <textarea id="resolution" class="form-control" th:field="*{resolution}" rows="6" cols="80" required></textarea>
                             <br><br>
                         </div>
                         <div style="float: left">

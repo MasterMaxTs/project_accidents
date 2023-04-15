@@ -14,14 +14,7 @@
             integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
             crossorigin="anonymous"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <style>
-        .container_confirm {
-            border: dimgray solid 1px;
-            border-radius: 10px 10px 10px 10px;
-            padding: 20px 20px;
-        }
-    </style>
-    <title>Добавить в архив</title>
+    <title>Удаление документа</title>
 </head>
 <body>
 <br>
@@ -52,48 +45,30 @@
         <br>
         <div class="row pt-3">
             <div class="card" style="width: 70%; border-radius: 10px 10px 10px 10px">
-                <div class="card-header" style="border: lightslategray; background-color: #a8a8a8">
-                    <span>Добавление в архив</span>
+                <div class="card-header" style="border: lightslategray; background-color: lightcoral">
+                    <span>Удаление документа</span>
                 </div>
                 <div class="card-body">
                     <div class="container_confirm">
                         <div style="float: contour; text-align: center; color: indianred">
-                            <h4 th:text="${'Вы действительно желаете добавить инцидент №' + accident.id + ' в архив?'}"></h4>
+                            <h4 th:text="${'Вы действительно хотите безвозвратно удалить сопроводительный документ: ' + document.fileName + '?'}"></h4>
                         </div>
                         <div style="padding: 30px 100px">
                             <div style="float: left">
-                                <form th:action="@{|/accidents/${accident.id}/addToArchive/|}" method="POST">
-                                    <input type="hidden" name="status.id" value="5"/>
-                                    <button type="submit" class="btn btn-warning">Добавить</button>
+                                <form th:action="@{|/documents/${document.id}/delete|}" method="GET">
+                                    <button type="submit" class="btn btn-danger"> Удалить</button>
                                 </form>
                             </div>
-                            <div style="float: right">
-                                <button type="button" class="btn btn-secondary"  onclick="window.location.href='/index'"> Отмена</button>
+                            <div th:with="accident=${document.accident}" style="float: right">
+                                <form th:action="@{|/accidents/${accident.id}|}">
+                                    <button type="submit" class="btn btn-secondary">Отмена</button>
+                                </form>
                             </div>
                         </div>
                     </div>
-                    <br>
-                    <h6><b>Название:</b></h6>
-                    <h6 th:text="${accident.name}"></h6>
-                    <h6><b>Тип:</b></h6>
-                    <h6 th:text="${accident.type.name}"></h6>
-                    <h6><b>Описание:</b></h6>
-                    <h6 th:text="${accident.text}"></h6>
-                    <h6><b>Адрес ДТП:</b></h6>
-                    <h6 th:text="${accident.address}"></h6>
-                    <h6><b>Применённые статьи:</b></h6>
-                    <h6 th:text="${#strings.listJoin(accident.rules, ' ; ')}"></h6>
-                    <label for="res"><b>Вынесенное постановление:</b></label>
-                    <br>
-                    <textarea th:text="${accident.resolution}" id="res" rows="6" cols="60" readonly ></textarea>
-                    <h6><b>Локальное время создания:</b></h6>
-                    <h6 th:text="${#temporals.format(accident.created, 'dd/MM/YYYY HH:mm')}"></h6>
-                    <h6><b>Локальное время решения:</b></h6>
-                    <h6 th:text="${#temporals.format(accident.updated, 'dd/MM/YYYY HH:mm')}"></h6>
-                    <br>
                 </div>
             </div>
-       </div>
+        </div>
     </div>
 </div>
 </body>

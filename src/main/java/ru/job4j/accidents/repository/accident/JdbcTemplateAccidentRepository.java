@@ -8,7 +8,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.job4j.accidents.model.*;
-import ru.job4j.accidents.repository.status.StatusRepository;
 
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
@@ -111,8 +110,21 @@ public class JdbcTemplateAccidentRepository implements AccidentRepository {
                 "insert into accidents_rules (accident_id, rule_id)"
                         + " values(?, ?)"
         ),
+        DELETE_ACCIDENTS_TABLE(
+                "delete from accidents where id = ?"
+        ),
         DELETE_BY_STATUS_ACCIDENTS_TABLE(
                 "delete from accidents where id = ? and status_id = ?"
+        ),
+        DELETE_ALL_BY_STATUS_ACCIDENTS_TABLE(
+                "delete from accidents where status_id = ?"
+        ),
+        DELETE_DOCUMENTS_TABLE(
+                "delete from documents where accident_id = ?"
+        ),
+        DELETE_ALL_BY_STATUS_DOCUMENTS_TABLE(
+                "delete from documents where accident_id in"
+                        + "(select id from accidents where status_id = ?)"
         ),
         DELETE_ACCIDENTS_RULES_TABLE(
                 "delete from accidents_rules where accident_id = ?"
@@ -120,9 +132,6 @@ public class JdbcTemplateAccidentRepository implements AccidentRepository {
         DELETE_ALL_BY_STATUS_ACCIDENTS_RULES_TABLE(
                 "delete from accidents_rules where accident_id in"
                 + " (select id from accidents where status_id = ?)"
-        ),
-        DELETE_ALL_BY_STATUS_ACCIDENTS_TABLE(
-                "delete from accidents where status_id = ?"
         );
 
         /**
@@ -184,12 +193,15 @@ public class JdbcTemplateAccidentRepository implements AccidentRepository {
     @Override
     public Accident delete(Accident accident) {
         jdbc.update(
+                Queries.DELETE_DOCUMENTS_TABLE.sql,
+                accident.getId()
+        );
+        jdbc.update(
                 Queries.DELETE_ACCIDENTS_RULES_TABLE.sql,
                 accident.getId());
         jdbc.update(
-                Queries.DELETE_BY_STATUS_ACCIDENTS_TABLE.sql,
-                accident.getId(),
-                StatusRepository.ARCHIVED_STATUS_ID);
+                Queries.DELETE_ACCIDENTS_TABLE.sql,
+                accident.getId());
         System.out.println("Deleting the accident from the database "
                 + "successfully");
         return accident;
@@ -214,7 +226,7 @@ public class JdbcTemplateAccidentRepository implements AccidentRepository {
         return jdbc.query(
                 Queries.FIND_ALL_STATUS_ACCIDENTS_TABLE.sql,
                 accidentRowMapper,
-                StatusRepository.QUEUED_STATUS_ID);
+                TrackingStates.QUEUED_STATUS.getId());
     }
 
     @Override
@@ -222,17 +234,21 @@ public class JdbcTemplateAccidentRepository implements AccidentRepository {
         return jdbc.query(
                 Queries.FIND_ALL_STATUS_ACCIDENTS_TABLE.sql,
                 accidentRowMapper,
-                StatusRepository.ARCHIVED_STATUS_ID);
+                TrackingStates.ARCHIVED_STATUS.getId());
     }
 
     @Override
     public void deleteAllArchived() {
         jdbc.update(
+                Queries.DELETE_ALL_BY_STATUS_DOCUMENTS_TABLE.sql,
+                TrackingStates.ARCHIVED_STATUS.getId()
+        );
+        jdbc.update(
                 Queries.DELETE_ALL_BY_STATUS_ACCIDENTS_RULES_TABLE.sql,
-                StatusRepository.ARCHIVED_STATUS_ID);
+                TrackingStates.ARCHIVED_STATUS.getId());
         jdbc.update(
                 Queries.DELETE_ALL_BY_STATUS_ACCIDENTS_TABLE.sql,
-                StatusRepository.ARCHIVED_STATUS_ID);
+                TrackingStates.ARCHIVED_STATUS.getId());
         System.out.println("Deleting all archived accidents from the database "
                 + "successfully");
     }

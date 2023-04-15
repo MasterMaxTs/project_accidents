@@ -18,4 +18,5 @@
     <include file="scripts/010_dml_insert_statuses.sql" relativeToChangelogFile="true"/>
     <include file="scripts/011_ddl_create_accidents_table.sql" relativeToChangelogFile="true"/>
     <include file="scripts/012_ddl_create_accidents_rules_table.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/013_ddl_create_documents_table.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

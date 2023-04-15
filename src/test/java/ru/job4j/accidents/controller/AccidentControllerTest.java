@@ -8,14 +8,16 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.job4j.accidents.Job4jAccidentsApplication;
 import ru.job4j.accidents.model.*;
-import ru.job4j.accidents.repository.status.StatusRepository;
 import ru.job4j.accidents.service.accident.AccidentService;
+import ru.job4j.accidents.service.document.DocumentService;
 import ru.job4j.accidents.service.rule.RuleService;
 import ru.job4j.accidents.service.status.StatusService;
 import ru.job4j.accidents.service.type.AccidentTypeService;
@@ -27,8 +29,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -45,6 +46,11 @@ class AccidentControllerTest {
      * Объект-заглушка
      */
     private MockMvc mockMvc;
+
+    /**
+     * Объект-заглушка
+     */
+    private MockMultipartFile mockMultipartFile;
 
     /**
      * Сервис заглушек
@@ -69,6 +75,9 @@ class AccidentControllerTest {
     private UserService userService;
 
     @MockBean
+    private DocumentService documentService;
+
+    @MockBean
     private HttpServletRequest request;
 
     /**
@@ -89,8 +98,15 @@ class AccidentControllerTest {
                                 typeService,
                                 ruleService,
                                 statusService,
-                                userService))
+                                userService,
+                                documentService))
                         .build();
+        mockMultipartFile = new MockMultipartFile(
+                "photo",
+                "photo.jpg",
+                MediaType.MULTIPART_FORM_DATA_VALUE,
+                "some data".getBytes()
+        );
     }
 
     /**
@@ -374,18 +390,19 @@ class AccidentControllerTest {
     @Test
     @WithMockUser(username = "user", authorities = {"ROLE_USER"})
     void whenCreateAccidentShouldReturnPageForInformAndVerifyPerformMethods() throws Exception {
-        int statusId = StatusRepository.ACCEPTED_STATUS_ID;
+        int statusId = TrackingStates.ACCEPTED_STATUS.getId();
         doReturn(new AccidentType(1, "two cars")).when(typeService).findById(1);
         doReturn(new User("user", "pass")).when(userService).findByUserName("user");
         doReturn(new Status(statusId, "accepted")).when(statusService).findById(statusId);
         this.mockMvc.perform(
-                post("/saveAccident")
+                    multipart("/saveAccident").file(mockMultipartFile)
                         .param("name", "new accident")
                         .param("type.id", "1")
                         .param("text", "description")
                         .param("address", "accident address")
-                        .param("username", "user"))
-                .andDo(print())
+                        .param("username", "user")
+                        .param("photo", mockMultipartFile.getOriginalFilename())
+                ).andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(
                         view().name("user/accident/create-accident-success")
@@ -408,12 +425,12 @@ class AccidentControllerTest {
     @Test
     @WithMockUser(username = "root", authorities = {"ROLE_USER"})
     void whenUpdateAccidentByUserShouldReturnPageForInformAndVerifyPerformMethods() throws Exception {
-        int statusId = StatusRepository.ACCEPTED_STATUS_ID;
+        int statusId = TrackingStates.ACCEPTED_STATUS.getId();
         doReturn(new AccidentType(1, "two cars")).when(typeService).findById(1);
         doReturn(new Status(statusId, "accepted")).when(statusService).findById(statusId);
         doReturn(new User("user", "pass")).when(userService).findByUserName("user");
         this.mockMvc.perform(
-                        post("/updateAccident")
+                        multipart("/updateAccident").file(mockMultipartFile)
                                 .param("id", "1")
                                 .param("name", "corrected name")
                                 .param("type.id", "1")
@@ -442,16 +459,16 @@ class AccidentControllerTest {
     @Test
     @WithMockUser(username = "root", authorities = {"ROLE_ADMIN"})
     void whenUpdateAccidentByAdminShouldReturnPageForInformAndVerifyPerformMethods() throws Exception {
-        int statusId = StatusRepository.RESOLVED_STATUS_ID;
+        int statusId = TrackingStates.RESOLVED_STATUS.getId();
         doReturn(new AccidentType(1, "two cars")).when(typeService).findById(1);
         doReturn(List.of(
                 new Rule(1, "first rule"),
                 new Rule(3, "third rule")))
-                .when(ruleService).getRulesFromIds(request, "rIds");
+                .when(ruleService).getRulesFromIds(new String[] {"1", "3"});
         doReturn(new Status(statusId, "resolved")).when(statusService).findById(statusId);
         doReturn(new User("user", "pass")).when(userService).findByUserName("user");
         this.mockMvc.perform(
-                        post("/updateAccident")
+                        multipart("/updateAccident").file(mockMultipartFile)
                                 .param("id", "1")
                                 .param("name", "accident name")
                                 .param("type.id", "1")
