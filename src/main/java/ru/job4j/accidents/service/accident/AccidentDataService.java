@@ -5,7 +5,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.job4j.accidents.model.Accident;
 import ru.job4j.accidents.repository.accident.AccidentPagingAndSortingRepository;
-import ru.job4j.accidents.repository.status.StatusRepository;
+import ru.job4j.accidents.model.TrackingStates;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -79,16 +79,16 @@ public class AccidentDataService implements AccidentService {
 
     @Override
     public List<Accident> findAllQueued() {
-        return store.findAllByStatus(StatusRepository.QUEUED_STATUS_ID);
+        return store.findAllByStatus(TrackingStates.QUEUED_STATUS.getId());
     }
 
     @Override
     public List<Accident> findAllArchived() {
-        return store.findAllByStatus(StatusRepository.ARCHIVED_STATUS_ID);
+        return store.findAllByStatus(TrackingStates.ARCHIVED_STATUS.getId());
     }
 
     @Override
     public void deleteAllArchived() {
-        store.deleteAllByStatus(StatusRepository.ARCHIVED_STATUS_ID);
+        store.deleteAllByStatus(TrackingStates.ARCHIVED_STATUS.getId());
     }
 }

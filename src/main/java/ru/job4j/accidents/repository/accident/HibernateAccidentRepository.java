@@ -5,11 +5,15 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
 import ru.job4j.accidents.model.Accident;
-import ru.job4j.accidents.repository.status.StatusRepository;
+import ru.job4j.accidents.model.TrackingStates;
 
 import java.util.List;
 import java.util.Optional;
 
+
+/**
+ * Реализация доступа к хранилищу автоинцидентов с помощью Hibernate
+ */
 @Repository
 @AllArgsConstructor
 public class HibernateAccidentRepository implements AccidentRepository {
@@ -77,7 +81,7 @@ public class HibernateAccidentRepository implements AccidentRepository {
           return session.createQuery(
                   "select distinct a from Accident a left join fetch a.rules"
                           + " where a.status.id = :stId", Accident.class)
-                  .setParameter("stId", StatusRepository.QUEUED_STATUS_ID)
+                  .setParameter("stId", TrackingStates.QUEUED_STATUS.getId())
                   .list();
         }
     }
@@ -89,7 +93,7 @@ public class HibernateAccidentRepository implements AccidentRepository {
                     "select distinct a from Accident a left join fetch a.rules"
                             + " where a.status.id = :stId"
                             + " order by a.updated desc", Accident.class)
-                    .setParameter("stId", StatusRepository.ARCHIVED_STATUS_ID)
+                    .setParameter("stId", TrackingStates.ARCHIVED_STATUS.getId())
                     .list();
         }
     }
@@ -100,7 +104,7 @@ public class HibernateAccidentRepository implements AccidentRepository {
             session.beginTransaction();
             session.createQuery(
                     "delete from Accident a where a.status.id = "
-                            + StatusRepository.ARCHIVED_STATUS_ID)
+                            + TrackingStates.ARCHIVED_STATUS.getId())
                     .executeUpdate();
             session.getTransaction().commit();
         }
