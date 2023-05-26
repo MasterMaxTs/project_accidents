@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.job4j.accidents.model.Accident;
 import ru.job4j.accidents.repository.accident.AccidentRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -56,8 +57,18 @@ public class AccidentServiceImpl implements AccidentService {
     }
 
     @Override
+    public List<Accident> findAllByCarPlate(String carPlate) {
+        return store.findAllByCarPlate(carPlate);
+    }
+
+    @Override
     public List<Accident> findAllQueued() {
         return store.findAllQueued();
+    }
+
+    @Override
+    public List<Accident> findAllReturned() {
+        return store.findAllReturned();
     }
 
     @Override
@@ -71,15 +82,28 @@ public class AccidentServiceImpl implements AccidentService {
     }
 
     @Override
-    public Accident checkAccidentForStatus(int accidentId, int statusId) {
-        Accident rsl = null;
-        Accident accident = findById(accidentId);
-        if (statusId == accident.getStatus().getId()) {
-            rsl = accident;
-        }
-        return rsl;
+    public boolean checkAccidentForStatus(Accident accident) {
+        Accident accidentInDb = findById(accident.getId());
+        return accident.getStatus().getId() == accidentInDb.getStatus().getId();
     }
 
+    @Override
+    public List<Accident> findAllByTypeAndStatus(int typeId, int statusId) {
+        return store.findAllByTypeAndStatus(typeId, statusId);
+    }
+
+    @Override
+    public List<Accident> findAllByAddressAndDateRange(String address,
+                                                       LocalDateTime after,
+                                                       LocalDateTime before
+    ) {
+        return store.findAllByAddressAndDateRange(address, after, before);
+    }
+
+    @Override
+    public List<Accident> findAllByRegisteredLastDay() {
+        return store.findAllByRegisteredLastDay();
+    }
 
     @Override
     public Accident findById(int id) {
@@ -88,6 +112,4 @@ public class AccidentServiceImpl implements AccidentService {
                         String.format("Accident with id = %d not found in store", id)
                 ));
     }
-
-
 }

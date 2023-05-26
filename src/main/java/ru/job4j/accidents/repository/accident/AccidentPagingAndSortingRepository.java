@@ -1,12 +1,10 @@
 package ru.job4j.accidents.repository.accident;
 
 import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.data.repository.query.Param;
-import org.springframework.transaction.annotation.Transactional;
 import ru.job4j.accidents.model.Accident;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -18,25 +16,35 @@ public interface AccidentPagingAndSortingRepository extends
     /**
      * Возвращает список автоинцидентов пользователя
      * @param userName имя пользователя
-     * @return список автоинцидентов пользователя
+     * @return список автоинцидентов пользователя, отсортированных по
+     * статусу сопровождения в естественном порядке и времени регистрации в
+     * обратном порядке
      */
-    @Transactional
-    @Query("from Accident a where a.user.username = :username")
-    List<Accident> findAllByUser(@Param("username") String userName);
+    @SuppressWarnings("checkstyle:MethodName")
+    List<Accident> findAllByUser_UsernameOrderByStatusAscCreatedDesc(String userName);
+
+
+    /**
+     * Возвращает список автоинцидентов по регистрационному знаку автомобиля
+     * @param carPlate регистрационный знак автомобиля
+     * @return список автоинцидентов, отсортированных по
+     * статусу сопровождения в естественном порядке и времени регистрации в
+     * обратном порядке
+     */
+    List<Accident> findAllByCarPlateOrderByStatusAscCreatedDesc(String carPlate);
 
     /**
      * Возвращает список автоинцидентов из хранилища по statusId
+     * @param statusId идентификатор статуса сопровождения
      * @return список автоинцидентов по заданному статусу
      */
-    @Transactional
-    @Query("from Accident a where a.status.id = :stId")
-    List<Accident> findAllByStatus(@Param("stId") int statusId);
+    @SuppressWarnings("checkstyle:MethodName")
+    List<Accident> findAllByStatus_Id(int statusId);
 
     /**
      * Удаляет автоинцидент из хранилища по id
      * @param id идентификатор автоинцидента
      */
-    @Transactional
     @Modifying
     void deleteAccidentById(int id);
 
@@ -44,8 +52,45 @@ public interface AccidentPagingAndSortingRepository extends
      * Удаляет все автоинциденты из хранилища по statusId
      * @param statusId идентификатор статуса сопровождения автоинцидента
      */
-    @Transactional
+    @SuppressWarnings("checkstyle:MethodName")
     @Modifying
-    @Query("delete from Accident a where a.status.id = :stId")
-    void deleteAllByStatus(@Param("stId") int statusId);
+    void deleteAllByStatus_Id(int statusId);
+
+    /**
+     * Возвращает список автоинцидентов, отфильтрованных по типу
+     * и статусу сопровождения
+     * @param typeId идентификатор автоинцидента
+     * @param statusId  идентификатор статуса сопровождения
+     * @return список отфильтрованных автоинцидентов и отсортированных по
+     * времени регистрации в обратном порядке
+     */
+    @SuppressWarnings("checkstyle:MethodName")
+    List<Accident> findAllByType_IdAndStatus_IdOrderByCreatedDesc(int typeId,
+                                                                  int statusId);
+
+    /**
+     * Возвращает список автоинцидентов, отфильтрованных по адресу ДТП и
+     * локальному времени регистрации в диапазоне дат
+     * @param address адрес ДТП
+     * @param start начальное значение диапазона дат в виде локального времени
+     * регистрации автоинцидента
+     * @param end конечное значение диапазона дат в виде локального времени
+     * регистрации автоинцидента
+     * @return список отфильтрованных автоинцидентов и отсортированных по
+     * времени регистрации в обратном порядке
+     */
+    List<Accident> findAllByAddressAndCreatedBetweenOrderByCreatedDesc(String address,
+                                                                       LocalDateTime start,
+                                                                       LocalDateTime end);
+
+    /**
+     * Возвращает список автоинцидентов, зарегистрированных в системе за
+     * указанный период времени
+     * @param start начальное время регистрации
+     * @param end конечное время регистрации
+     * @return список отфильтрованных автоинцидентов и отсортированных по
+     * времени регистрации в обратном порядке
+     */
+    List<Accident> findAllByCreatedBetweenOrderByCreatedDesc(LocalDateTime start,
+                                                             LocalDateTime end);
 }
