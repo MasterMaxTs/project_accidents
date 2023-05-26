@@ -5,7 +5,7 @@ import lombok.*;
 import javax.persistence.*;
 
 /**
- * Модель данных Статус решения автоинцидента
+ * Модель данных Статус сопровождения автоинцидента
  */
 @Data
 @NoArgsConstructor

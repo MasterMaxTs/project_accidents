@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import javax.sql.DataSource;
 
 /**
- * Класс конфигурации подключения к базе данных
+ * Класс конфигурации подключения к базе данных с помощью JdbcTemplate
  */
 @Configuration
 @EnableTransactionManagement

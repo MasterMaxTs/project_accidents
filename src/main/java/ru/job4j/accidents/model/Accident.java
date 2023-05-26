@@ -26,6 +26,13 @@ public class Accident {
     private int id;
 
     /**
+     * Регистрационный знак автомобиля
+     */
+    @NonNull
+    @Column(name = "car_plate")
+    private String carPlate;
+
+    /**
      * Название
      */
     @NonNull
@@ -93,5 +100,12 @@ public class Accident {
      * Постановление о ДТП
      */
     private String resolution;
+
+    /**
+     * Уведомление инициатору автоинцидента
+     */
+    private String notice;
+
+
 
 }

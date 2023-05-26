@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS statuses
 (
-    id SERIAL,
+    id   SERIAL,
     name VARCHAR NOT NULL,
     PRIMARY KEY (id),
     UNIQUE (name)

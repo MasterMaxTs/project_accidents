@@ -11,16 +11,42 @@ import lombok.Getter;
 public enum TrackingStates {
 
     /**
-     * Константы состояний
+     * Статус сопровождения Принят
      */
     ACCEPTED_STATUS(1),
-    QUEUED_STATUS(2),
-    IN_WORKED_STATUS(3),
-    RESOLVED_STATUS(4),
-    ARCHIVED_STATUS(5);
 
     /**
-     * Идентификатор состояния
+     * Статус сопровождения Скорректирован
+     */
+    ADJUSTED_STATUS(2),
+
+    /**
+     * Статус сопровождения Ожидание
+     */
+    QUEUED_STATUS(3),
+
+    /**
+     * Статус сопровождения Рассматривается
+     */
+    IN_WORKED_STATUS(4),
+
+    /**
+     * Статус сопровождения Решён
+     */
+    RESOLVED_STATUS(5),
+
+    /**
+     * Статус сопровождения Архив
+     */
+    ARCHIVED_STATUS(6),
+
+    /**
+     * Статус сопровождения Возвращён
+     */
+    RETURNED_STATUS(7);
+
+    /**
+     * Идентификатор статуса сопровождения
      */
     private final int id;
 }

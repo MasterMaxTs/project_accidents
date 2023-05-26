@@ -22,6 +22,11 @@ import javax.sql.DataSource;
 @EnableTransactionManagement
 public class DataConfig {
 
+    /**
+     * Инстанцирует объект LocalContainerEntityManagerFactoryBean
+     * @param ds объект DataSource
+     * @return LocalContainerEntityManagerFactoryBean
+     */
     @Primary
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(
@@ -37,6 +42,11 @@ public class DataConfig {
         return factory;
     }
 
+    /**
+     * Инстанцирует объект JpaTransactionManager
+     * @param entityManagerFactory EntityManagerFactory
+     * @return JpaTransactionManager
+     */
     @Bean
     public PlatformTransactionManager transactionManager(
                                 EntityManagerFactory entityManagerFactory) {

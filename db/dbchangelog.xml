@@ -10,13 +10,15 @@
     <include file="scripts/002_dml_insert_authorities_security.sql" relativeToChangelogFile="true"/>
     <include file="scripts/003_ddl_create_users_security_table.sql" relativeToChangelogFile="true"/>
     <include file="scripts/004_dml_insert_users_security.sql" relativeToChangelogFile="true"/>
-    <include file="scripts/005_ddl_create_rules.sql" relativeToChangelogFile="true"/>
-    <include file="scripts/006_dml_insert_rules.sql" relativeToChangelogFile="true"/>
-    <include file="scripts/007_ddl_create_types_table.sql" relativeToChangelogFile="true"/>
-    <include file="scripts/008_dml_insert_types.sql" relativeToChangelogFile="true"/>
-    <include file="scripts/009_ddl_create_statuses_table.sql" relativeToChangelogFile="true"/>
-    <include file="scripts/010_dml_insert_statuses.sql" relativeToChangelogFile="true"/>
-    <include file="scripts/011_ddl_create_accidents_table.sql" relativeToChangelogFile="true"/>
-    <include file="scripts/012_ddl_create_accidents_rules_table.sql" relativeToChangelogFile="true"/>
-    <include file="scripts/013_ddl_create_documents_table.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/005_ddl_create_registration_cards_table.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/006_dml_insert_registration_cards.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/007_ddl_create_rules.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/008_dml_insert_rules.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/009_ddl_create_types_table.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/010_dml_insert_types.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/011_ddl_create_statuses_table.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/012_dml_insert_statuses.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/013_ddl_create_accidents_table.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/014_ddl_create_accidents_rules_table.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/015_ddl_create_documents_table.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

@@ -3,6 +3,7 @@ package ru.job4j.accidents.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -37,6 +38,12 @@ public class User {
     private String password;
 
     /**
+     * Email пользователя
+     */
+    @NonNull
+    private String email;
+
+    /**
      * Статус доступа в приложение
      */
     private boolean enabled;
@@ -51,11 +58,30 @@ public class User {
     private Authority authority;
 
     /**
+     * Локальное время регистрации пользователя в приложении
+     */
+    private LocalDateTime created;
+
+    /**
+     * Локальное время обновления учётных данных пользователя в приложении
+     */
+    private LocalDateTime updated;
+
+    /**
      * Список автоинцидентов пользователя
      */
-    @OneToMany (
+    @OneToMany(
             cascade = CascadeType.ALL,
             fetch = FetchType.LAZY,
             mappedBy = "user")
     private List<Accident> accidents;
+
+    /**
+     * Список карточек учёта автомобилей пользователя в ГИБДД
+     */
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
+            mappedBy = "user")
+    private List<RegistrationCard> registrationCards;
 }

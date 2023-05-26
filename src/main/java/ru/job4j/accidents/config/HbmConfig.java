@@ -1,21 +1,28 @@
 package ru.job4j.accidents.config;
 
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 import java.util.Properties;
 
+/**
+ * Класс конфигурации подключения к базе данных c помощью Hibernate
+ */
 @Configuration
 @EnableTransactionManagement
 public class HbmConfig {
 
+    /**
+     * Инстанцирует объект LocalSessionFactoryBean
+     * @param dialect значение свойства hibernate.dialect из файла
+     * application.properties
+     * @param ds DataSource
+     * @return LocalSessionFactoryBean
+     */
     @Bean
     public LocalSessionFactoryBean sessionFactory(
                  @Value("${hibernate.dialect}") String dialect, DataSource ds) {
@@ -27,12 +34,5 @@ public class HbmConfig {
         cfg.setProperty("hibernate.show_sql", "true");
         sessionFactory.setHibernateProperties(cfg);
         return sessionFactory;
-    }
-
-    @Bean
-    public PlatformTransactionManager htx(SessionFactory sf) {
-        HibernateTransactionManager tx = new HibernateTransactionManager();
-        tx.setSessionFactory(sf);
-        return tx;
     }
 }

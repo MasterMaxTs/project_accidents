@@ -1,4 +1,4 @@
-package ru.job4j.accidents.utils;
+package ru.job4j.accidents.utils.encoder;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,6 +18,10 @@ public class Encoder {
         System.out.print(encoder.encode(password));
     }
 
+    /**
+     * Главный исполняемый метод для утилитарного класса
+     * @param args массив из аргументов командной строки
+     */
     public static void main(String[] args) {
         showEncodedPasswordByBcrypt("secret");
     }
