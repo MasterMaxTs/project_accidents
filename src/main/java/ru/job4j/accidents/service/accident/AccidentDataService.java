@@ -3,10 +3,13 @@ package ru.job4j.accidents.service.accident;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.job4j.accidents.model.Accident;
+import ru.job4j.accidents.model.Status;
 import ru.job4j.accidents.repository.accident.AccidentPagingAndSortingRepository;
 import ru.job4j.accidents.model.TrackingStates;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -34,6 +37,7 @@ public class AccidentDataService implements AccidentService {
         return true;
     }
 
+    @Transactional
     @Override
     public Accident delete(Accident accident) {
         store.deleteAccidentById(accident.getId());
@@ -63,32 +67,68 @@ public class AccidentDataService implements AccidentService {
     }
 
     @Override
-    public Accident checkAccidentForStatus(int accidentId, int statusId) {
-        Accident rsl = null;
-        Accident accident = findById(accidentId);
-        if (statusId == accident.getStatus().getId()) {
-            rsl = accident;
-        }
-        return rsl;
+    public boolean checkAccidentForStatus(Accident accident) {
+        Accident accidentInDb = findById(accident.getId());
+        return accident.getStatus() == accidentInDb.getStatus();
     }
 
+    @Transactional
+    @Override
+    public List<Accident> findAllByTypeAndStatus(int typeId, int statusId) {
+        return store.findAllByType_IdAndStatus_IdOrderByCreatedDesc(typeId, statusId);
+    }
+
+    @Transactional
+    @Override
+    public List<Accident> findAllByAddressAndDateRange(String address,
+                                                       LocalDateTime after,
+                                                       LocalDateTime before
+    ) {
+        return store.findAllByAddressAndCreatedBetweenOrderByCreatedDesc(address,
+                                                                         after,
+                                                                         before);
+    }
+
+    @Transactional
+    @Override
+    public List<Accident> findAllByRegisteredLastDay() {
+        LocalDateTime before = LocalDateTime.now();
+        LocalDateTime after = before.minusDays(1L);
+        return store.findAllByCreatedBetweenOrderByCreatedDesc(after, before);
+    }
+
+    @Transactional
     @Override
     public List<Accident> findAllByUserName(String userName) {
-        return store.findAllByUser(userName);
+        return store.findAllByUser_UsernameOrderByStatusAscCreatedDesc(userName);
     }
 
+    @Transactional
+    @Override
+    public List<Accident> findAllByCarPlate(String carPlate) {
+        return store.findAllByCarPlateOrderByStatusAscCreatedDesc(carPlate);
+    }
+
+    @Transactional
     @Override
     public List<Accident> findAllQueued() {
-        return store.findAllByStatus(TrackingStates.QUEUED_STATUS.getId());
+        return store.findAllByStatus_Id(TrackingStates.QUEUED_STATUS.getId());
     }
 
+    @Override
+    public List<Accident> findAllReturned() {
+        return store.findAllByStatus_Id(TrackingStates.RESOLVED_STATUS.getId());
+    }
+
+    @Transactional
     @Override
     public List<Accident> findAllArchived() {
-        return store.findAllByStatus(TrackingStates.ARCHIVED_STATUS.getId());
+        return store.findAllByStatus_Id(TrackingStates.ARCHIVED_STATUS.getId());
     }
 
+    @Transactional
     @Override
     public void deleteAllArchived() {
-        store.deleteAllByStatus(TrackingStates.ARCHIVED_STATUS.getId());
+        store.deleteAllByStatus_Id(TrackingStates.ARCHIVED_STATUS.getId());
     }
 }
