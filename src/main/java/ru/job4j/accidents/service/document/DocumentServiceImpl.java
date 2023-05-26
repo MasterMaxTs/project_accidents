@@ -2,11 +2,10 @@ package ru.job4j.accidents.service.document;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.job4j.accidents.model.Accident;
 import ru.job4j.accidents.model.Document;
-import ru.job4j.accidents.repository.document.DocumentCrudRepository;
+import ru.job4j.accidents.repository.document.DocumentRepository;
 
 import java.io.IOException;
 import java.util.List;
@@ -17,47 +16,43 @@ import java.util.NoSuchElementException;
  */
 @Service
 @AllArgsConstructor
-public class DocumentDataService implements DocumentService {
+public class DocumentServiceImpl implements DocumentService {
 
     /**
-     * Делегирование выполнения операций Spring Data при доступе к хранилищу
-     * Сопроводительных документов
+     * Делегирование выполнения операций локальному Хранилищу
+     * сопроводительных документов
      */
-    private final DocumentCrudRepository store;
+    private final DocumentRepository store;
 
     @Override
     public Document add(Document document) {
-        store.save(document);
-        return document;
+        return store.add(document);
     }
 
     @Override
     public boolean update(Document document) {
-        store.save(document);
+        store.update(document);
         return true;
     }
 
     @Override
     public Document delete(Document document) {
-        store.delete(document);
-        return document;
+        return store.delete(document);
     }
 
     @Override
     public List<Document> findAll() {
-        return (List<Document>) store.findAll();
+        return store.findAll();
     }
 
     @Override
     public Document findById(int id) {
         return store.findById(id)
-                .orElseThrow(
-                () -> new NoSuchElementException(
+                .orElseThrow(() -> new NoSuchElementException(
                         String.format("Document with id = %d not found in store", id)
                 ));
     }
 
-    @Transactional
     @Override
     public List<Document> findAllByAccidentId(int accidentId) {
         return store.findAllByAccidentId(accidentId);
@@ -65,7 +60,8 @@ public class DocumentDataService implements DocumentService {
 
     @Override
     public void saveDocumentsFromRequest(MultipartFile[] multipartFiles,
-                                         Accident accident, String author) {
+                                         Accident accident,
+                                         String author) {
         for (MultipartFile mpf
                 : multipartFiles) {
             if (!mpf.isEmpty()) {
@@ -75,7 +71,7 @@ public class DocumentDataService implements DocumentService {
                     document.setFileName(mpf.getOriginalFilename());
                     document.setAuthor(author);
                     document.setAccident(accident);
-                    store.save(document);
+                    store.add(document);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -83,13 +79,11 @@ public class DocumentDataService implements DocumentService {
         }
     }
 
-    @Transactional
     @Override
     public void deleteAllByAccidentId(int accidentId) {
         store.deleteAllByAccidentId(accidentId);
     }
 
-    @Transactional
     @Override
     public void deleteAllByStatusId(int statusId) {
         store.deleteAllByStatusId(statusId);

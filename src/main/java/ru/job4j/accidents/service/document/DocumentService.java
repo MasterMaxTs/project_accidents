@@ -23,9 +23,10 @@ public interface DocumentService extends Service<Document> {
      * Сохраняет сопроводительные документы к автоинциденту из запроса в БД
      * @param multipartFiles MultipartFile
      * @param accident автоинцидент
+     * @param author инициатор отправленных документов
      */
-    void saveAccidentDocumentsFromRequest(MultipartFile[] multipartFiles,
-                                          Accident accident, String author);
+    void saveDocumentsFromRequest(MultipartFile[] multipartFiles,
+                                  Accident accident, String author);
 
     /**
      * Удаляет все сопроводительные документы по Id автоинцидента
