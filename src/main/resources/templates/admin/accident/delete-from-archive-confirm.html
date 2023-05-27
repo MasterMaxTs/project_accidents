@@ -15,6 +15,10 @@
             crossorigin="anonymous"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <style>
+        .main_container {
+            border-radius: 10px 10px 10px 10px;
+            background-color: #f6f5f5
+        }
         .container_confirm {
             border: dimgray solid 1px;
             border-radius: 10px 10px 10px 10px;
@@ -61,12 +65,16 @@
             background-color: #d6e9ff;
             font-weight: bold;
         }
+        #table-tenth_column {
+            background-color: aliceblue;
+            font-weight: bold;
+        }
     </style>
     <title>Показать инцидент</title>
 </head>
 <body>
 <br>
-<div class="container" style="border-radius: 10px 10px 10px 10px; background-color: #f6f5f5">
+<div class="container main_container">
     <br>
     <div class="container">
         <ul class="nav nav-tabs">
@@ -74,16 +82,36 @@
                 <a class="nav-link" aria-current="page" href="#"><b>АВТОИНЦИДЕНТЫ</b></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" th:href="@{/index}">Инциденты</a>
+                <a class="nav-link" th:href="@{/getAllAccidents}">Инциденты</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" th:href="@{/createAccident}">Добавить инцидент</a>
+                <a class="nav-link" th:href="@{/getFilters}">Фильтр</a>
             </li>
-            <li th:if="${username == 'root'}" class="nav-item" >
+            <li class="nav-item" >
                 <a class="nav-link" th:href="@{/allQueued}">Очередь</a>
             </li>
-            <li th:if="${username == 'root'}" class="nav-item">
+            <li class="nav-item" >
+                <a class="nav-link" th:href="@{/allReturned}">Возврат</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link active" th:href="@{/allArchived}">Архив</a>
+            </li>
+            <li style="margin-left: 30px">
+                <form th:action="@{/getAllByCarPlate}" method="GET" class="d-flex">
+                    <input type="search" name="car.plate" class="form-control me-2" placeholder="Введите ГРЗ:"
+                           pattern="^([авекмнорстхуabekmhopctxyАВЕКМНОРСТХУABEKMHOPCTXY]{1}\d{3}[авекмнорстхуabekmhopctxyАВЕКМНОРСТХУABEKMHOPCTXY]{2}\d{2,3})$" aria-label="Search" size="7" required/>
+                    <i class="fa fa-commenting-o" style="color: darkgrey" aria-hidden="true"
+                       title="формат: а000аа00 или а000аа000. Символы латиницы или кириллицы в любом регистре, включая символы чисел"></i>&nbsp
+                    <button class="btn btn-outline-secondary" type="submit" title="Найти"><i class="fa fa-search" aria-hidden="true"></i></button>
+                </form>
+            </li>
+            <li style="margin-left: 10px" class="nav-item">
+                <a class="nav-link" th:href="@{/getAllUsers}">Пользователи
+                    <i class="fa fa-users" aria-hidden="true" style="color: dimgrey"></i></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{|/user/credentials?username=${username}|}">Профиль
+                    <i class="fa fa-user" aria-hidden="true" style="color: dimgrey"></i></a>
             </li>
             <li class="nav-item">
                 <button type="button" class="btn btn-primary" onclick="window.location.href='/logout'">
@@ -116,7 +144,7 @@
                     <table class="table table-bordered">
                         <tbody>
                         <tr>
-                            <td id="table-first_column" >Номер</td>
+                            <td id="table-first_column" >Номер автоинцидента</td>
                             <td th:text="${accident.id}"></td>
                         </tr>
                         <tr>
@@ -128,41 +156,68 @@
                             <td th:text="${#temporals.format(accident.updated, 'dd/MM/YY HH:mm')}"></td>
                         </tr>
                         <tr>
-                            <td id="table-fourth_column">Тип</td>
+                            <td id="table-fourth_column">Регистрационный знак ТС</td>
+                            <td th:text="${accident.carPlate}"></td>
+                        </tr>
+                        <tr>
+                            <td id="table-fifth_column">Тип</td>
                             <td th:text="${accident.type.name}"></td>
                         </tr>
                         <tr>
-                            <td id="table-fifth_column">Название</td>
+                            <td id="table-sixth_column">Название</td>
                             <td th:text="${accident.name}"></td>
                         </tr>
                         <tr>
-                            <td id="table-sixth_column"><label for="text">Описание</label></td>
+                            <td id="table-seventh_column"><label for="text">Описание</label></td>
                             <td>
                                 <textarea th:text="${accident.text}" id="text" rows="4" cols="60" readonly ></textarea>
                             </td>
                         </tr>
                         <tr>
-                            <td id="table-seventh_column"><label for="rules">Применённые статьи</label></td>
+                            <td id="table-eighth_column"><label for="rules">Применённые статьи</label></td>
                             <td>
                                 <textarea th:text="${#lists.size(accident.rules) == 0} ? '[......]' : ${#strings.listJoin(accident.rules, ' ; ')}"
                                               id="rules" rows="4" cols="30" readonly ></textarea>
                             </td>
                         </tr>
                         <tr>
-                            <td id="table-eighth_column"><label for="res">Вынесенное постановление</label></td>
+                            <td id="table-ninth_column"><label for="res">Вынесенное постановление</label></td>
                             <td>
                                 <textarea th:text="${accident.resolution}" id="res" rows="6" cols="60" readonly ></textarea>
                             </td>
                         </tr>
                         <tr>
-                            <td id="table-ninth_column">Статус</td>
+                            <td id="table-tenth_column">Статус</td>
                             <td>
                                 <div th:with="status=${accident.status}">
-                                    <button th:if="${status.id == 1}" type="button" class="btn btn-primary" th:text="${status}"></button>
-                                    <button th:if="${status.id == 2}" type="button" class="btn btn-danger" th:text="${status}"></button>
-                                    <button th:if="${status.id == 3}" type="button" class="btn btn-warning" th:text="${status}"></button>
-                                    <button th:if="${status.id == 4}" type="button" class="btn btn-success" th:text="${status}"></button>
-                                    <button th:if="${status.id == 5}" type="button" class="btn btn-success" th:text="${status}"></button>
+                                    <div th:if="${status.id == 1}">
+                                        <i style="color: cadetblue" class="fa fa-car" aria-hidden="true"></i>
+                                        <p th:text="${status}" style="font-weight: bold; font-size: 12px; color: cadetblue"></p>
+                                    </div>
+                                    <div th:if="${status.id == 2}">
+                                        <i style="color: burlywood" class="fa fa-car" aria-hidden="true"></i>
+                                        <p th:text="${status}" style="font-weight: bold; font-size: 12px; color: sandybrown"></p>
+                                    </div>
+                                    <div th:if="${status.id == 3}">
+                                        <i style="color: sandybrown" class="fa fa-car" aria-hidden="true"></i>
+                                        <p th:text="${status}" style="font-weight: bold; font-size: 12px; color: sandybrown"></p>
+                                    </div>
+                                    <div th:if="${status.id == 4}">
+                                        <i style="color: yellowgreen" class="fa fa-car" aria-hidden="true"></i>
+                                        <p th:text="${status}" style="font-weight: bold; font-size: 12px; color: yellowgreen"></p>
+                                    </div>
+                                    <div th:if="${status.id == 5}">
+                                        <i style="color: green" class="fa fa-car" aria-hidden="true"></i>
+                                        <p th:text="${status}" style="font-weight: bold; font-size: 12px; color: green"></p>
+                                    </div>
+                                    <div th:if="${status.id == 6}">
+                                        <i style="color: #523434" class="fa fa-car" aria-hidden="true"></i>
+                                        <p th:text="${status}" style="font-weight: bold; font-size: 12px; color: #523434"></p>
+                                    </div>
+                                    <div th:if="${status.id == 7}">
+                                        <i style="color: crimson" class="fa fa-car" aria-hidden="true"></i>
+                                        <p th:text="${status}" style="font-weight: bold; font-size: 12px; color: crimson"></p>
+                                    </div>
                                 </div>
                             </td>
                         </tr>
