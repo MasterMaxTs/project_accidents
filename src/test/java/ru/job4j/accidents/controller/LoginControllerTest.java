@@ -15,7 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * Класс используется для выполнения модульных тестов
- * слоя контроллера аутентификации
+ * контроллера аутентификации
  */
 @SpringBootTest(classes = Job4jAccidentsApplication.class)
 @ActiveProfiles(value = "test")
@@ -42,7 +42,7 @@ class LoginControllerTest {
      */
     @Test
     void whenCredentialsAreNotCorrectShouldReturnLoginPageWithErrorMessage() throws Exception {
-        String errorMessage = "Username or Password is incorrect !!!";
+        String errorMessage = "Username или Password не корректны !!!";
         this.mockMvc.perform(get("/login?error=true"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -57,7 +57,7 @@ class LoginControllerTest {
      */
     @Test
     void whenLogoutIsSuccessfulShouldReturnLoginPageWithErrorMessage() throws Exception {
-        String errorMessage = "You have been successfully logged out !!!";
+        String errorMessage = "Вы успешно вышли из приложения !!!";
         this.mockMvc.perform(get("/login?logout=true"))
                 .andDo(print())
                 .andExpect(status().isOk())
