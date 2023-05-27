@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+            integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
+            integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
+            crossorigin="anonymous"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        .main_container {
+            border-radius: 10px 10px 10px 10px;
+            background-color: #f6f5f5
+        }
+        .table_data_align{
+            text-align: center; vertical-align: middle;
+        }
+        #table_col_carplate {
+            border: #77757d solid 1px;
+            border-radius: 5px;
+            padding: 2px;
+            text-decoration:none
+        }
+        .radius {
+            background: #e4e4ea;
+            border: 1px solid grey ;
+            border-radius: 10px 10px 10px 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            opacity: 85%;
+        }
+        .position {
+            margin: 7px;
+            padding: 10px 30px 10px;
+        }
+        .first_filter_container {
+            text-align: center;
+            float: right;
+            width: 30%;
+        }
+        .second_filter_container {
+            text-align: center;
+            float: right;
+            width: 25%;
+        }
+        .third_filter_container {
+            text-align: center;
+            float: left;
+            width: 40%;
+        }
+    </style>
+    <title>Отфильтрованные инциденты</title>
+</head>
+<body>
+<br>
+<div class="container main_container">
+    <br>
+    <div class="container">
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="#"><b>АВТОИНЦИДЕНТЫ</b></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/getAllAccidents}">Инциденты</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" th:href="@{/getFilters}">Фильтр</a>
+            </li>
+            <li class="nav-item" >
+                <a class="nav-link" th:href="@{/allQueued}">Очередь</a>
+            </li>
+            <li class="nav-item" >
+                <a class="nav-link" th:href="@{/allReturned}">Возврат</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/allArchived}">Архив</a>
+            </li>
+            <li style="margin-left: 30px">
+                <form th:action="@{/getAllByCarPlate}" method="GET" class="d-flex">
+                    <input type="search" name="car.plate" class="form-control me-2" placeholder="Введите ГРЗ:"
+                           pattern="^([авекмнорстхуabekmhopctxyАВЕКМНОРСТХУABEKMHOPCTXY]{1}\d{3}[авекмнорстхуabekmhopctxyАВЕКМНОРСТХУABEKMHOPCTXY]{2}\d{2,3})$" aria-label="Search" size="7" required/>
+                    <i class="fa fa-commenting-o" style="color: darkgrey" aria-hidden="true"
+                       title="формат: а000аа00 или а000аа000. Символы латиницы или кириллицы в любом регистре, включая символы чисел"></i>&nbsp
+                    <button class="btn btn-outline-secondary" type="submit" title="Найти"><i class="fa fa-search" aria-hidden="true"></i></button>
+                </form>
+            </li>
+            <li style="margin-left: 10px" class="nav-item">
+                <a class="nav-link" th:href="@{/getAllUsers}">Пользователи
+                    <i class="fa fa-users" aria-hidden="true" style="color: dimgrey"></i></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{|/user/credentials?username=${username}|}">Профиль
+                    <i class="fa fa-user" aria-hidden="true" style="color: dimgrey"></i></a>
+            </li>
+            <li class="nav-item">
+                <button type="button" class="btn btn-primary" onclick="window.location.href='/logout'">
+                    <span th:text="${username + ' |Выйти'}"></span></button>
+            </li>
+        </ul>
+        <br>
+        <div>
+            <div class="position radius first_filter_container">
+                <p><em>Фильтровать все автоинциденты, зарегистрированные за минувшие сутки</em></p>
+                <br><br>
+                <div style="float: right">
+                    <form th:action="@{/accidents/filter/by_last_day}" method="GET">
+                        <button type="submit" class="btn btn-success">Фильтр</button>
+                    </form>
+                </div>
+            </div>
+            <div class="position radius second_filter_container">
+                <p><em>Фильтровать автоинциденты по адресу ДТП и дате</em></p>
+                <br><br>
+                <form th:action="@{/accidents/filter/by_address_and_date}" method="GET">
+                    <label for="address">Адрес ДТП</label>
+                    <br>
+                    <input th:if="${filter2}" type="text" th:value="${'&#10132; ' + filteredAddress}" size="25" style="background-color: bisque" disabled/>
+                    <input type="text" id="address" name="address" title="Введите адрес" size="25" required/>
+                    <br><br>
+                    <label>Дата ДТП</label>
+                    <p><u>поиск за период</u></p>
+                    <label for="start_date">c:</label>
+                    <input type="datetime-local" pattern="" id="start_date" name="start" size="7" title="Начало" required/>
+                    <br><br>
+                    <label for="end_date">по:</label>
+                    <input type="datetime-local" id="end_date" name="end" size="7" title="Конец" required/>
+                    <br><br>
+                    <button type="submit" class="btn btn-success" style="float: right">Фильтр</button>
+                </form>
+            </div>
+            <div class="position radius third_filter_container">
+                <p><em>Фильтровать автоинциденты по типу и статусу</em></p>
+                <br><br>
+                <form th:action="@{/accidents/filter/by_type_and_status}" method="GET">
+                    <div style="float: left">
+                        <label for="type">Тип</label>
+                        <br>
+                        <select id="type" name="type.id" size="7" required>
+                            <option th:text="${'Текущий поиск: '}" style="color: #3d3d3d; background-color: lightcoral" disabled></option>
+                            <option th:if="${filter3}" th:text="${filteredType.name}"  style="color: #3d3d3d; background-color:bisque" disabled></option>
+                            <option disabled>Выбрать&#8595;:</option>
+                            <option th:each="type: ${types}" th:text="${type.name}" th:value="${type.id}"></option>
+                        </select>
+                    </div>
+                    <div style="float: right">
+                        <label for="status">Статус</label>
+                        <br>
+                        <select id="status" name="status.id" size="9" required>
+                            <option th:text="${'Текущий поиск: '}" style="color: #3d3d3d; background-color: lightcoral" disabled></option>
+                            <option th:if="${filter3}" th:text="${filteredStatus.name}"  style="color: #3d3d3d; background-color:bisque" disabled></option>
+                            <option disabled>Выбрать&#8595;:</option>
+                            <option th:each="status: ${statuses}" th:text="${status.name}" th:value="${status.id}"></option>
+                        </select>
+                        <br><br>
+                        <button type="submit" class="btn btn-success" style="float: right">Фильтр</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <a name="anchor"></a>
+        <table class="table table-striped" style="background-color: ghostwhite">
+            <caption style="caption-side: top; text-align: right; font-weight: bold">
+                <span th:text="${#lists.isEmpty(accidents) ? (filterName + ' : 0 инц.') : (filterName + ' : ' + #lists.size(accidents) + ' инц.')}"></span>
+                <a th:href="@{/getAllAccidents}" style="text-decoration:none">
+                    <i class="fa fa-th-list" style="color: #01441d" title="общий список" aria-hidden="true"></i>
+                </a>
+                <a th:href="@{/allQueued}" style="text-decoration:none">
+                    <i class="fa fa-exclamation-triangle" style="color: #fdb201" title="очередь" aria-hidden="true"></i>
+                </a>
+                <a th:href="@{/allReturned}" style="text-decoration:none">
+                    <i class="fa fa-hand-lizard-o" style="color: crimson" title="возврат" aria-hidden="true"></i>
+                </a>
+                <a th:href="@{/allArchived}" style="text-decoration:none">
+                    <i class="fa fa-archive" style="color: #523434" title="архив" aria-hidden="true"></i>
+                </a>
+            </caption>
+            <thead class="table-danger">
+                <tr style="text-align: center">
+                    <th scope="col">ГРЗ</th>
+                    <th scope="col">id</th>
+                    <th scope="col">Имя</th>
+                    <th scope="col">Тип</th>
+                    <th scope="col">Статьи</th>
+                    <th scope="col">Адрес</th>
+                    <th scope="col">Создан</th>
+                    <th scope="col">Обновлён</th>
+                    <th scope="col">Действие</th>
+                    <th scope="col">Статус</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="accident :${accidents}" th:with="rules=${accident.rules}, carPlate=${accident.carPlate}" class="table_data_align">
+                    <td>
+                        <a id="table_col_carplate" th:text="${carPlate}" th:href="@{|/registration-card?car_plate=${carPlate}|}" title="Просмотр"></a>
+                    </td>
+                    <th scope="row" th:text="${accident.id}"></th>
+                    <td th:text="${accident.name}"></td>
+                    <td th:text="${accident.type.name}"></td>
+                    <td th:text="${#lists.size(rules) == 0} ? ${'[......]'} : ${#strings.listJoin(rules, ' , ')}"></td>
+                    <td th:text="${accident.address}"></td>
+                    <td th:text="${#temporals.format(accident.created, 'dd/MM/YY HH:mm')}"></td>
+                    <td th:text="${#temporals.format(accident.updated, 'dd/MM/YY HH:mm')}"></td>
+                    <td>
+                        <table>
+                            <tbody>
+                                <tr th:with="status_id=${accident.status.id}">
+                                    <td>
+                                        <form th:unless="${(status_id == 5) or (status_id == 6) or (status_id == 7)}"
+                                              th:action="@{|/accidents/${accident.id}/edit|}" method="GET">
+                                            <button type="submit" class="btn btn-success" >Рассмотреть</button>
+                                        </form>
+                                        <form th:if="${status_id == 5}" th:action="@{|/accidents/${accident.id}/addToArchive/confirm|}" method="GET">
+                                            <button type="submit" class="btn btn-dark">Архивировать</button>
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <form th:if="${(status_id == 1) or (status_id == 2)}" th:action="@{|/accidents/${accident.id}/addToQueue/confirm|}" method="GET">
+                                            <button type="submit" class="btn btn-warning" >Отложить</button>
+                                        </form>
+                                        <form th:if="${status_id == 5}" th:action="@{|/accidents/${accident.id}/edit|}" method="GET">
+                                            <button type="submit" class="btn btn-outline-info">Править</button>
+                                        </form>
+                                        <form th:if="${(status_id == 6) or (status_id == 7)}" th:action="@{|/accidents/${accident.id}|}" method="GET">
+                                            <button type="submit" class="btn btn-secondary">Просмотреть</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                    <td>
+                        <div th:with="status=${accident.status}">
+                            <div th:if="${status.id == 1}">
+                                <i style="color: cadetblue" class="fa fa-car" aria-hidden="true"></i>
+                                <p th:text="${status}" style="font-weight: bold; font-size: 12px; color: cadetblue"></p>
+                            </div>
+                            <div th:if="${status.id == 2}">
+                                <i style="color: burlywood" class="fa fa-car" aria-hidden="true"></i>
+                                <p th:text="${status}" style="font-weight: bold; font-size: 12px; color: burlywood"></p>
+                            </div>
+                            <div th:if="${status.id == 3}">
+                                <i style="color: sandybrown" class="fa fa-car" aria-hidden="true"></i>
+                                <p th:text="${status}" style="font-weight: bold; font-size: 12px; color: sandybrown"></p>
+                            </div>
+                            <div th:if="${status.id == 4}">
+                                <i style="color: yellowgreen" class="fa fa-car" aria-hidden="true"></i>
+                                <p th:text="${status}" style="font-weight: bold; font-size: 12px; color: yellowgreen"></p>
+                            </div>
+                            <div th:if="${status.id == 5}">
+                                <i style="color: green" class="fa fa-car" aria-hidden="true"></i>
+                                <p th:text="${status}" style="font-weight: bold; font-size: 12px; color: green"></p>
+                            </div>
+                            <div th:if="${status.id == 6}">
+                                <i style="color: #523434" class="fa fa-car" aria-hidden="true"></i>
+                                <p th:text="${status}" style="font-weight: bold; font-size: 12px; color: #523434"></p>
+                            </div>
+                            <div th:if="${status.id == 7}">
+                                <i style="color: crimson" class="fa fa-car" aria-hidden="true"></i>
+                                <p th:text="${status}" style="font-weight: bold; font-size: 12px; color: crimson"></p>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <button type="button" style="float: right" class="btn btn-secondary" onclick="window.location.href='#anchor'">В начало</button>
+        <br><br>
+    </div>
+</div>
+</body>
+</html>

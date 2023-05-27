@@ -1,7 +1,7 @@
 package ru.job4j.accidents.service.user;
 
 import lombok.AllArgsConstructor;
-import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.job4j.accidents.model.User;
 import ru.job4j.accidents.repository.user.UserCrudRepository;
@@ -24,11 +24,7 @@ public class UserDataService implements UserService {
 
     @Override
     public User add(User user) {
-        try {
-            store.save(user);
-        } catch (ConstraintViolationException cve) {
-            throw new RuntimeException(cve);
-        }
+        store.save(user);
         return user;
     }
 
@@ -46,7 +42,10 @@ public class UserDataService implements UserService {
 
     @Override
     public List<User> findAll() {
-        return (List<User>) store.findAll();
+        return (List<User>) store.findAll(
+                Sort.by("created").descending()
+                        .and(Sort.by("enabled").descending())
+        );
     }
 
     @Override
