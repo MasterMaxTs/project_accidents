@@ -17,25 +17,27 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.job4j.accidents.Job4jAccidentsApplication;
 import ru.job4j.accidents.model.*;
 import ru.job4j.accidents.service.accident.AccidentService;
+import ru.job4j.accidents.service.card.RegistrationCardService;
 import ru.job4j.accidents.service.document.DocumentService;
 import ru.job4j.accidents.service.rule.RuleService;
 import ru.job4j.accidents.service.status.StatusService;
 import ru.job4j.accidents.service.type.AccidentTypeService;
 import ru.job4j.accidents.service.user.UserService;
 
-import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * Класс используется для выполнения модульных тестов
- * слоя контроллера автоинцидентов
+ * контроллера автоинцидентов
  */
 @SpringBootTest(classes = Job4jAccidentsApplication.class)
 @ActiveProfiles(value = "test")
@@ -75,10 +77,14 @@ class AccidentControllerTest {
     private UserService userService;
 
     @MockBean
-    private DocumentService documentService;
+    private RegistrationCardService registrationCardService;
 
     @MockBean
-    private HttpServletRequest request;
+    private User user;
+
+    @MockBean
+    @Qualifier("documentDataService")
+    private DocumentService documentService;
 
     /**
      * Argument captor
@@ -99,6 +105,7 @@ class AccidentControllerTest {
                                 ruleService,
                                 statusService,
                                 userService,
+                                registrationCardService,
                                 documentService))
                         .build();
         mockMultipartFile = new MockMultipartFile(
@@ -185,51 +192,46 @@ class AccidentControllerTest {
     @Test
     @WithMockUser(username = "user", authorities = {"ROLE_USER"})
     void whenCreateAccidentShouldReturnPageWithData() throws Exception {
+        doReturn(user).when(userService).findByUserName("user");
+        doReturn(List.of()).when(user).getRegistrationCards();
         doReturn(List.of()).when(typeService).findAll();
         this.mockMvc.perform(get("/createAccident"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(view().name("user/accident/create-accident"))
+                .andExpect(model().attribute("registrationCards", user.getRegistrationCards()))
                 .andExpect(model().attribute("types", typeService.findAll()));
     }
 
     /**
-     * Тест проверяет сценарий сопоставления вида и модели при попытке изменить
-     * автоинцидент, когда его текущий идентификатор статуса отличен от 1,
-     * авторизовавшимся в приложении пользователем в роли USER
+     * Тест проверяет сценарий сопоставления вида и модели при попытке
+     * обычного пользователя изменить автоинцидент, когда по нему уже
+     * проводятся работы со стороны администратора приложения
      */
     @Test
     @WithMockUser(username = "user", authorities = {"ROLE_USER"})
     void whenUpdateAccidentByUserAndStatusAccidentChangedByAdminShouldReturnErrorPage() throws Exception {
         int accidentId = 1;
-        doReturn(null).when(accidentService).checkAccidentForStatus(accidentId, 1);
+        int statusId = 1;
+        Accident accidentInDb = new Accident();
+        doReturn(accidentInDb).when(accidentService).findById(accidentId);
+        doReturn(new Status(statusId, "accepted"))
+                .when(statusService).findById(statusId);
+        doReturn(false)
+                .when(accidentService).checkAccidentForStatus(accidentInDb);
         this.mockMvc.perform(
-                get(String.format("/accidents/%d/check_status", accidentId)))
+                        multipart("/updateAccident").file(mockMultipartFile)
+                                .param("id", "1")
+                                .param("name", "corrected name")
+                                .param("type.id", "1")
+                                .param("text", "corrected description")
+                                .param("address", "accident address")
+                                .param("status.id", String.valueOf(statusId))
+                                .param("username", "user"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(view().name("user/error/edit-accident-prohibition"))
                 .andExpect(model().attribute("id", accidentId));
-    }
-
-    /**
-     * Тест проверяет сценарий сопоставления вида и модели при попытке
-     * изменить автоинцидент, авторизовавшимся в приложении пользователем в
-     * роли USER
-     */
-    @Test
-    @WithMockUser(username = "user", authorities = {"ROLE_USER"})
-    void whenUpdateAccidentByUserAndStatusAccidentHasNotChangedByAdminShouldReturnPageForUpdate() throws Exception {
-        int accidentId = 1;
-        Accident accidentInDb = new Accident();
-        doReturn(accidentInDb).when(accidentService).checkAccidentForStatus(accidentId, 1);
-        doReturn(List.of()).when(typeService).findAll();
-        this.mockMvc.perform(
-                        get(String.format("/accidents/%d/check_status", accidentId)))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(view().name("user/accident/edit-accident"))
-                .andExpect(model().attribute("accident", accidentInDb))
-                .andExpect(model().attribute("types", typeService.findAll()));
     }
 
     /**
@@ -313,17 +315,15 @@ class AccidentControllerTest {
     @WithMockUser(username = "root", authorities = {"ROLE_ADMIN"})
     void whenUpdateAccidentByAdminShouldReturnPageForUpdateWithData() throws Exception {
         int accidentId = 1;
-        int statusId = 2;
         Accident accidentInDb = new Accident();
         Status statusInDb = new Status();
         doReturn(accidentInDb).when(accidentService).findById(accidentId);
-        doReturn(statusInDb).when(statusService).findById(statusId);
+        doReturn(statusInDb).when(statusService).findById(TrackingStates.IN_WORKED_STATUS.getId());
         doReturn(List.of()).when(typeService).findAll();
         doReturn(List.of()).when(ruleService).findAll();
         this.mockMvc.perform(
-                    get(String.format("/accidents/%d/edit", accidentId))
-                        .param("status.id", String.valueOf(statusId))
-                ).andDo(print())
+                    get(String.format("/accidents/%d/edit", accidentId)))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin/accident/edit-accident"))
                 .andExpect(model().attribute("accident", accidentInDb))
@@ -348,6 +348,27 @@ class AccidentControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("user/accident/show-accident"))
                 .andExpect(model().attribute("accident", accidentInDb));
+    }
+
+    /**
+     * Тест проверяет сценарий сопоставления вида и модели при попытке
+     * просмотра карточки учёта автомобиля, авторизовавшимся в приложении
+     * пользователем в роли ADMIN
+     */
+    @Test
+    @WithMockUser(username = "root", authorities = {"ROLE_ADMIN"})
+    void whenShowRegistrationCardShouldReturnPageWithData() throws Exception {
+        String carPlate = "x001xx123";
+        RegistrationCard card = new RegistrationCard();
+        doReturn(card)
+                .when(registrationCardService).findByCarPlate(carPlate);
+        this.mockMvc.perform(
+                get("/registration-card")
+                        .param("car_plate", carPlate)
+                ).andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(view().name("/admin/accident/show-reg-card"))
+                .andExpect(model().attribute("card", card));
     }
 
     /**
@@ -391,11 +412,15 @@ class AccidentControllerTest {
     @WithMockUser(username = "user", authorities = {"ROLE_USER"})
     void whenCreateAccidentShouldReturnPageForInformAndVerifyPerformMethods() throws Exception {
         int statusId = TrackingStates.ACCEPTED_STATUS.getId();
-        doReturn(new AccidentType(1, "two cars")).when(typeService).findById(1);
-        doReturn(new User("user", "pass")).when(userService).findByUserName("user");
-        doReturn(new Status(statusId, "accepted")).when(statusService).findById(statusId);
+        doReturn(new AccidentType(1, "two cars"))
+                .when(typeService).findById(1);
+        doReturn(new User("user", "*****", "test@test.com"))
+                .when(userService).findByUserName("user");
+        doReturn(new Status(statusId, "accepted"))
+                .when(statusService).findById(statusId);
         this.mockMvc.perform(
                     multipart("/saveAccident").file(mockMultipartFile)
+                        .param("car.plate", "x005xx123")
                         .param("name", "new accident")
                         .param("type.id", "1")
                         .param("text", "description")
@@ -413,6 +438,7 @@ class AccidentControllerTest {
         verify(accidentService).add(captor.capture());
         Accident value = captor.getValue();
         assertThat(value.getName()).isEqualTo("new accident");
+        assertThat(value.getCarPlate()).isEqualTo("x005xx123");
         assertThat(value.getType().getName()).isEqualTo("two cars");
         assertThat(value.getStatus().getName()).isEqualTo("accepted");
         assertThat(value.getUser().getUsername()).isEqualTo("user");
@@ -426,9 +452,12 @@ class AccidentControllerTest {
     @WithMockUser(username = "root", authorities = {"ROLE_USER"})
     void whenUpdateAccidentByUserShouldReturnPageForInformAndVerifyPerformMethods() throws Exception {
         int statusId = TrackingStates.ACCEPTED_STATUS.getId();
-        doReturn(new AccidentType(1, "two cars")).when(typeService).findById(1);
-        doReturn(new Status(statusId, "accepted")).when(statusService).findById(statusId);
-        doReturn(new User("user", "pass")).when(userService).findByUserName("user");
+        doReturn(new AccidentType(1, "two cars"))
+                .when(typeService).findById(1);
+        doReturn(new Status(statusId, "accepted"))
+                .when(statusService).findById(statusId);
+        doReturn(new User("user", "pass", "test@test.com"))
+                .when(userService).findByUserName("user");
         this.mockMvc.perform(
                         multipart("/updateAccident").file(mockMultipartFile)
                                 .param("id", "1")
@@ -441,7 +470,7 @@ class AccidentControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(
-                        view().name("user/accident/edit-accident-success")
+                        view().name("admin/accident/edit-accident-success")
                 );
         verify(typeService).findById(1);
         verify(statusService).findById(statusId);
@@ -460,13 +489,16 @@ class AccidentControllerTest {
     @WithMockUser(username = "root", authorities = {"ROLE_ADMIN"})
     void whenUpdateAccidentByAdminShouldReturnPageForInformAndVerifyPerformMethods() throws Exception {
         int statusId = TrackingStates.RESOLVED_STATUS.getId();
-        doReturn(new AccidentType(1, "two cars")).when(typeService).findById(1);
+        doReturn(new AccidentType(1, "two cars"))
+                .when(typeService).findById(1);
         doReturn(List.of(
-                new Rule(1, "first rule"),
-                new Rule(3, "third rule")))
-                .when(ruleService).getRulesFromIds(new String[] {"1", "3"});
-        doReturn(new Status(statusId, "resolved")).when(statusService).findById(statusId);
-        doReturn(new User("user", "pass")).when(userService).findByUserName("user");
+                    new Rule(1, "first rule"),
+                    new Rule(3, "third rule"))
+                ).when(ruleService).getRulesFromIds(new String[] {"1", "3"});
+        doReturn(new Status(statusId, "resolved")
+                ).when(statusService).findById(statusId);
+        doReturn(new User("user", "pass", "test@test.com")
+                ).when(userService).findByUserName("user");
         this.mockMvc.perform(
                         multipart("/updateAccident").file(mockMultipartFile)
                                 .param("id", "1")
@@ -481,7 +513,7 @@ class AccidentControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(
-                        view().name("user/accident/edit-accident-success")
+                        view().name("admin/accident/edit-accident-success")
                 );
         verify(typeService).findById(1);
         verify(statusService).findById(statusId);
@@ -491,5 +523,130 @@ class AccidentControllerTest {
         assertThat(value.getName()).isEqualTo("accident name");
         assertThat(value.getResolution()).isEqualTo("resolution");
         assertThat(value.getStatus().getName()).isEqualTo("resolved");
+    }
+
+    /**
+     * Тест проверяет сценарий сопоставления вида и модели при попытке
+     * вызвать фильтрацию автоинцидентов из навигационного меню,
+     * авторизовавшимся в приложении пользователем в роли ADMIN
+     */
+    @Test
+    @WithMockUser(username = "root", authorities = {"ROLE_ADMIN"})
+    void whenGetFiltersShouldReturnPageForUpdateWithData() throws Exception {
+        this.mockMvc.perform(get("/getFilters"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(view().name("admin/accident/all-filtered-accidents"));
+    }
+
+    /**
+     * Тест проверяет сценарий сопоставления вида и модели при
+     * фильтрации автоинцидентов, зарегистрированных
+     * в приложении за минувшие сутки,авторизовавшимся в приложении
+     * пользователем в роли ADMIN
+     */
+    @Test
+    @WithMockUser(username = "root", authorities = {"ROLE_ADMIN"})
+    void whenFindAllAccidentsByRegisteredLastDayShouldReturnPageWithData() throws Exception {
+        List<Accident> filtered = List.of();
+        doReturn(filtered).when(accidentService).findAllByRegisteredLastDay();
+        this.mockMvc.perform(get("/accidents/filter/by_last_day"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(view().name("admin/accident/all-filtered-accidents"))
+                .andExpect(model().attribute("accidents", filtered));
+    }
+
+    /**
+     * Тест проверяет сценарий сопоставления вида и модели при
+     * фильтрации автоинцидентов адресу ДТП и периоду регистрации в приложении,
+     * авторизовавшимся в приложении пользователем в роли ADMIN
+     */
+    @Test
+    @WithMockUser(username = "root", authorities = {"ROLE_ADMIN"})
+    void whenFindAllAccidentsByAddressAndDateRangeShouldReturnPageWithData() throws Exception {
+        String address = "address";
+        LocalDateTime create = LocalDateTime.now();
+        LocalDateTime start = create.minusDays(2L);
+        LocalDateTime end = create.minusDays(1L);
+        List<Accident> filtered = List.of();
+        doReturn(filtered).when(accidentService).findAllByAddressAndDateRange(address,
+                                                                              start,
+                                                                              end);
+        this.mockMvc.perform(
+                get("/accidents/filter/by_address_and_date")
+                        .param("address", address)
+                        .param("start", String.valueOf(start))
+                        .param("end", String.valueOf(end))
+                ).andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(view().name("admin/accident/all-filtered-accidents"))
+                .andExpect(model().attribute("accidents", filtered));
+    }
+
+    /**
+     * Тест проверяет сценарий сопоставления вида и модели при
+     * фильтрации автоинцидентов по типу и статусу сопровождения,
+     * авторизовавшимся в приложении пользователем в роли ADMIN
+     */
+    @Test
+    @WithMockUser(username = "root", authorities = {"ROLE_ADMIN"})
+    void whenFindAllAccidentsByTypeAndStatusShouldReturnPageWithData() throws Exception {
+        int typeId = 1;
+        int statusId = 2;
+        List<Accident> filtered = List.of();
+        doReturn(new AccidentType(typeId, "Принят")).when(typeService).findById(typeId);
+        doReturn(new Status(statusId, "Ожидание")).when(statusService).findById(statusId);
+        doReturn(filtered).when(accidentService).findAllByTypeAndStatus(typeId, statusId);
+        this.mockMvc.perform(
+                get("/accidents/filter/by_type_and_status")
+                        .param("type.id", String.valueOf(typeId))
+                        .param("status.id", String.valueOf(statusId))
+                ).andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(view().name("admin/accident/all-filtered-accidents"))
+                .andExpect(model().attribute("accidents", filtered));
+    }
+
+    /**
+     * Тест проверяет сценарий сопоставления вида и модели при
+     * успешном поиске автоинцидентов по регистрационному знаку автомобиля из
+     * навигационного меню приложения,
+     * авторизовавшимся в приложении пользователем в роли ADMIN
+     */
+    @Test
+    @WithMockUser(username = "root", authorities = {"ROLE_ADMIN"})
+    void whenPerformSuccessfulSearchByCarPlateShouldReturnPageWithData() throws Exception {
+        String carPlate = "x001xx123";
+        List<Accident> searched = List.of(new Accident());
+        doReturn(searched).when(accidentService).findAllByCarPlate(carPlate);
+        this.mockMvc.perform(
+                get("/getAllByCarPlate")
+                        .param("car.plate", carPlate)
+                ).andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(view().name("admin/accident/all-filtered-accidents"))
+                .andExpect(model().attribute("accidents", searched));
+    }
+
+    /**
+     * Тест проверяет сценарий сопоставления вида и модели,
+     * когда по регистрационному знаку автомобиля, введённому в строке поиска
+     * навигационного меню, автоинцидентов не нашлось.
+     * Роль пользователя ADMIN
+     */
+    @Test
+    @WithMockUser(username = "root", authorities = {"ROLE_ADMIN"})
+    void whenPerformUnsuccessfulSearchByCarPlateShouldReturnPageForInform() throws Exception {
+        String carPlate = "x001xx123";
+        List<Accident> searched = List.of();
+        doReturn(searched).when(accidentService).findAllByCarPlate(carPlate);
+        this.mockMvc.perform(
+                        get("/getAllByCarPlate")
+                                .param("car.plate", carPlate)
+                ).andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(view().name("admin/accident/no-filtered-accidents-inform"))
+                .andExpect(model().attributeExists("errorMessage"));
     }
 }
