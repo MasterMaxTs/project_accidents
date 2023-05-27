@@ -13,10 +13,14 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.job4j.accidents.Job4jAccidentsApplication;
+import ru.job4j.accidents.model.Authority;
+import ru.job4j.accidents.model.RegistrationCard;
 import ru.job4j.accidents.model.User;
-import ru.job4j.accidents.repository.user.UserCrudRepository;
 import ru.job4j.accidents.service.authority.AuthorityService;
+import ru.job4j.accidents.service.card.RegistrationCardService;
 import ru.job4j.accidents.service.user.UserService;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -28,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * Класс используется для выполнения модульных тестов
- * слоя контроллера регистрации
+ * контроллера регистрации
  */
 @SpringBootTest(classes = Job4jAccidentsApplication.class)
 @ActiveProfiles(value = "test")
@@ -41,19 +45,22 @@ class RegControllerTest {
     private MockMvc mockMvc;
 
     /**
-     * Ссылки на слои сервисов
+     * Сервис заглушек
      */
-    @Autowired
+    @MockBean
     private UserService userService;
 
-    @Autowired
+    @MockBean
     private AuthorityService authorityService;
 
+    @MockBean
+    private RegistrationCardService registrationCardService;
+
+    /**
+     * Ссылка на PasswordEncoder
+     */
     @Autowired
     private PasswordEncoder passwordEncoder;
-
-    @MockBean
-    private UserCrudRepository repository;
 
     /**
      * Argument captor
@@ -68,7 +75,11 @@ class RegControllerTest {
     public void whenSetUp() {
         this.mockMvc =
                 MockMvcBuilders.standaloneSetup(
-                        new RegController(userService, authorityService, passwordEncoder))
+                        new RegController(
+                                userService,
+                                authorityService,
+                                registrationCardService,
+                                passwordEncoder))
                         .build();
     }
 
@@ -85,21 +96,33 @@ class RegControllerTest {
     }
 
     /**
-     * Тест проверяет сценарий регистрации нового пользователя, когда вводимое
-     * имя пользователя не может быть использовано
+     * Тест проверяет сценарий регистрации нового пользователя, когда вводимые
+     * регистрационные данные некорректны
      */
     @Test
     void whenNewUserRegistersWithIncorrectCredentialsShouldReturnViewRegPageWithErrorMessage() throws Exception {
-        doThrow(new RuntimeException()).when(repository).save(any(User.class));
+        String ownerName = "Имя владельца";
+        String ownerSurname = "Фамилия владельца";
+        String[] carPlates = new String[] {"x001xx123", "x002xx123"};
+        String[] certificateNumbers = new String[] {"00AB000001", "00AB000002"};
+        String[] vinCodes = new String[] {"A1B2C3D4F5G6H7J8K", "A2B3C4D5F6G7H8J9K"};
+        String username = "username";
+        String password = "********";
+        doThrow(new RuntimeException()).when(userService).add(any(User.class));
         this.mockMvc.perform(
                 post("/register")
-                        .param("username", "wrongName")
-                        .param("password", "password"))
+                        .param("owner.name", ownerName)
+                        .param("owner.surname", ownerSurname)
+                        .param("car.plate", carPlates)
+                        .param("certificate.number", certificateNumbers)
+                        .param("vin.code", vinCodes)
+                        .param("username", username)
+                        .param("password", password))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(view().name("user/registration/registration"))
                 .andExpect(model().attributeExists("errorMessage"));
-        verify(repository).save(captor.capture());
+        verify(userService).add(captor.capture());
     }
 
     /**
@@ -107,17 +130,39 @@ class RegControllerTest {
      */
     @Test
     void whenNewUserRegistersShouldReturnViewRegPageForInform() throws Exception {
-        User newUser = new User("username", "pass");
+        String ownerName = "Имя владельца";
+        String ownerSurname = "Фамилия владельца";
+        String[] carPlates = new String[] {"x001xx123", "x002xx123"};
+        String[] certificateNumbers = new String[] {"00AB000001", "00AB000002"};
+        String[] vinCodes = new String[] {"A1B2C3D4F5G6H7J8K", "A2B3C4D5F6G7H8J9K"};
+        User user = new User("username", "********", "test@test.com");
+        RegistrationCard card = new RegistrationCard();
+        card.setOwnerName(ownerName);
+        card.setOwnerName(ownerSurname);
+        List<RegistrationCard> cards = List.of(new RegistrationCard(), new RegistrationCard());
+        doReturn(new Authority("ROLE_USER")).when(authorityService).findByAuthority("ROLE_USER");
+        doReturn(cards).when(registrationCardService)
+                .collectRegistrationCardsFromRequest(user,
+                                                 card,
+                                                 carPlates,
+                                                 certificateNumbers,
+                                                 vinCodes);
         this.mockMvc.perform(
                         post("/register")
-                                .param("username", newUser.getUsername())
-                                .param("password", newUser.getPassword()))
+                                .param("owner.name", ownerName)
+                                .param("owner.surname", ownerSurname)
+                                .param("car.plate", carPlates)
+                                .param("certificate.number", certificateNumbers)
+                                .param("vin.code", vinCodes)
+                                .param("username", user.getUsername())
+                                .param("password", user.getPassword()))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(view().name("user/registration/registration-user-success"));
-        verify(repository).save(captor.capture());
+                .andExpect(view().name("user/registration/registration-user-success"))
+                .andExpect(model().attribute("user", user));
+        verify(userService).add(captor.capture());
         User value = captor.getValue();
-        assertThat(value.getUsername()).isEqualTo(newUser.getUsername());
-        assertTrue(passwordEncoder.matches(newUser.getPassword(), value.getPassword()));
+        assertThat(value.getUsername()).isEqualTo(user.getUsername());
+        assertTrue(passwordEncoder.matches(user.getPassword(), value.getPassword()));
     }
 }
