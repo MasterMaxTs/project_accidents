@@ -14,11 +14,17 @@
             integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
             crossorigin="anonymous"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        .main_container {
+            border-radius: 10px 10px 10px 10px;
+            background-color: #f6f5f5
+        }
+    </style>
     <title>Удаление документа</title>
 </head>
 <body>
 <br>
-<div class="container" style="border-radius: 10px 10px 10px 10px; background-color: #f6f5f5">
+<div class="container main_container">
     <br>
     <div class="container">
         <ul class="nav nav-tabs">
@@ -26,18 +32,41 @@
                 <a class="nav-link" aria-current="page" href="#"><b>АВТОИНЦИДЕНТЫ</b></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" th:href="@{/index}">Инциденты</a>
+                <a class="nav-link active" th:href="@{${username == 'root'}? '/getAllAccidents' : '/getAllByUser'}">Инциденты</a>
             </li>
-            <li class="nav-item">
+            <li th:unless="${username == 'root'}" class="nav-item">
                 <a class="nav-link" th:href="@{/createAccident}">Добавить инцидент</a>
+            </li>
+            <li th:if="${username == 'root'}" class="nav-item">
+                <a class="nav-link" th:href="@{/getFilters}">Фильтр</a>
             </li>
             <li th:if="${username == 'root'}" class="nav-item" >
                 <a class="nav-link" th:href="@{/allQueued}">Очередь</a>
             </li>
-            <li th:if="${username == 'root'}" class="nav-item">
-                <a class="nav-link active" th:href="@{/allArchived}">Архив</a>
+            <li th:if="${username == 'root'}" class="nav-item" >
+                <a class="nav-link" th:href="@{/allReturned}">Возврат</a>
             </li>
-            <li class="nav-item">
+            <li th:if="${username == 'root'}" class="nav-item">
+                <a class="nav-link" th:href="@{/allArchived}">Архив</a>
+            </li>
+            <li th:if="${username == 'root'}" style="margin-left: 30px">
+                <form th:action="@{/getAllByCarPlate}" method="GET" class="d-flex">
+                    <input type="search" name="car.plate" class="form-control me-2" placeholder="Введите ГРЗ:"
+                           pattern="^([авекмнорстхуabekmhopctxyАВЕКМНОРСТХУABEKMHOPCTXY]{1}\d{3}[авекмнорстхуabekmhopctxyАВЕКМНОРСТХУABEKMHOPCTXY]{2}\d{2,3})$" aria-label="Search" size="7" required/>
+                    <i class="fa fa-commenting-o" style="color: darkgrey" aria-hidden="true"
+                       title="формат: а000аа00 или а000аа000. Символы латиницы или кириллицы в любом регистре, включая символы чисел"></i>&nbsp
+                    <button class="btn btn-outline-secondary" type="submit" title="Найти"><i class="fa fa-search" aria-hidden="true"></i></button>
+                </form>
+            </li>
+            <li th:if="${username == 'root'}" style="margin-left: 10px" class="nav-item">
+                <a class="nav-link" th:href="@{/getAllUsers}">Пользователи
+                    <i class="fa fa-users" aria-hidden="true" style="color: dimgrey"></i></a>
+            </li>
+            <li class="nav-item" th:style="${(username == 'root')? '' : 'margin-left: 500px'}">
+                <a class="nav-link" th:href="@{|/user/credentials?username=${username}|}">Профиль
+                    <i class="fa fa-user" aria-hidden="true" style="color: dimgrey"></i></a>
+            </li>
+            <li class="nav-item" th:style="${(username == 'root')? '' : 'margin-left: 20px'}">
                 <button type="button" class="btn btn-primary" onclick="window.location.href='/logout'">
                     <span th:text="${username + ' |Выйти'}"></span></button>
             </li>
@@ -52,14 +81,14 @@
                     <h4 th:text="${'Сопроводительный документ ' + document.fileName +' успешно удалён!'}" style="text-align: center"></h4>
                     <br>
                     <div th:with="accident=${document.accident}" style="margin: 30px 45% 20px">
-                        <div th:if="${username == 'root'}">
-                            <form th:action="@{|/accidents/${accident.id}/edit|}" method="GET">
-                                <input type="hidden" name="status.id" value="3"/>
+                        <div th:unless="${username == 'root'}">
+                            <form th:action="@{|/accidents/${accident.id}/edit_by_user|}" method="GET">
+                                <input type="hidden" name="username" th:value="${username}"/>
                                 <button type="submit" class="btn btn-secondary">Закрыть</button>
                             </form>
                         </div>
-                        <div th:unless="${username == 'root'}">
-                            <form  th:action="@{|/accidents/${accident.id}|}" method="GET">
+                        <div th:if="${username == 'root'}">
+                            <form th:action="@{|/accidents/${accident.id}/edit|}" method="GET">
                                 <button type="submit" class="btn btn-secondary">Закрыть</button>
                             </form>
                         </div>

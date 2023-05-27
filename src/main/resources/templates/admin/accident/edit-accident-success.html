@@ -20,7 +20,7 @@
             background-color: #f6f5f5
         }
     </style>
-    <title>Удаление документа</title>
+    <title>Редактировать инцидент</title>
 </head>
 <body>
 <br>
@@ -74,27 +74,15 @@
         <br>
         <div class="row pt-3">
             <div class="card" style="width: 70%; border-radius: 10px 10px 10px 10px">
-                <div class="card-header" style="border: lightslategray; background-color: lightcoral">
-                    <span>Удаление документа</span>
+                <div class="card-header" style="border: lightslategray; background-color: yellowgreen">
+                    <span>Редактирование инцидента</span>
                 </div>
-                <div class="card-body">
-                    <div class="container_confirm">
-                        <div style="float: contour; text-align: center; color: indianred">
-                            <h4 th:text="${'Вы действительно хотите безвозвратно удалить сопроводительный документ: ' + document.fileName + '?'}"></h4>
-                        </div>
-                        <div style="padding: 30px 100px">
-                            <div style="float: left">
-                                <form th:action="@{|/documents/${document.id}/delete|}" method="GET">
-                                    <button type="submit" class="btn btn-danger"> Удалить</button>
-                                </form>
-                            </div>
-                            <div th:with="accident=${document.accident}" style="float: right">
-                                <form th:action="@{|/accidents/${accident.id}|}">
-                                    <button type="submit" class="btn btn-secondary">Отмена</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+                <div class="card-body" style="border: yellowgreen">
+                    <h4 th:text="${'Информация об инциденте №' + accident.id + ' успешно обновлена!'}"></h4>
+                    <br>
+                    <form th:action="@{${username == 'root'}? '/getAllAccidents' : '/getAllByUser'}">
+                        <button type="submit" class="btn btn-secondary"> На главную</button>
+                    </form>
                 </div>
             </div>
         </div>

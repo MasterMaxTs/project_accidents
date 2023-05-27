@@ -2,19 +2,35 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+            integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
+            integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
+            crossorigin="anonymous"></script>
     <style>
         .container {
             position: absolute;
             top: 50%;
             left: 50%;
             margin: 0 -50% 0 0;
+            padding: 10px;
             transform: translate(-50%, -50%);
-            width: 350px;
+            width: 500px;
             border: dimgray solid 1px;
             border-radius: 10px 10px 10px 10px; background-color: #d6e9ff;
         }
         #container_form {
             padding: 0 30px;
+        }
+        #container_form_table {
+            padding: 20px;
+            width: 400px;
         }
         #container_form_button {
             padding: 20px;
@@ -32,23 +48,23 @@
 <body>
     <div class="container">
         <h6 style="text-align: center"><u>LOG IN or REGISTER</u></h6>
-        <h5 th:unless="${errorMessage == null}" id="error_msg" th:text="${errorMessage}"></h5>
+        <h6 id="error_msg" th:text="${(errorMessage == null) ? ' ': errorMessage}"></h6>
         <div id="container_form">
             <form th:action="@{/login}" method="POST">
                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                <table>
+                <table id="container_form_table">
                     <tr>
-                        <td><label for="name">UserName:</label></td>
-                        <td><input type="text" id="name" name="username" placeholder="Input username" required/></td>
+                        <td><label for="name">username</label></td>
+                        <td><input type="text" id="name" name="username" placeholder="Введите username" required/></td>
                     </tr>
                     <tr>
-                        <td><label for="pass">Password:</label></td>
-                        <td><input type="password" id="pass" name="password" placeholder="Input password" required></td>
+                        <td><label for="pass">password</label></td>
+                        <td><input type="password" id="pass" name="password" placeholder="Введите password" required></td>
                     </tr>
                 </table>
                     <div id="container_form_button">
-                        <input type="submit" value="Submit">&nbsp;&nbsp;
-                        <input type="button" value="Register" onclick="window.location.href='/register'"/>
+                        <input type="submit" value="Войти">&nbsp;&nbsp;
+                        <input type="button" value="Регистрация" onclick="window.location.href='/register'"/>
                     </div>
 
             </form>

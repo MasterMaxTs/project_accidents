@@ -37,6 +37,10 @@
     }
     </script>
     <style>
+        .main_container {
+            border-radius: 10px 10px 10px 10px;
+            background-color: #f6f5f5
+        }
         .select-type {
             width: 300px;
         }
@@ -48,7 +52,7 @@
 </head>
 <body>
 <br>
-<div class="container" style="border-radius: 10px 10px 10px 10px; background-color: #f6f5f5">
+<div class="container main_container">
     <br>
     <div class="container">
         <ul class="nav nav-tabs">
@@ -56,16 +60,36 @@
                 <a class="nav-link" aria-current="page" href="#"><b>АВТОИНЦИДЕНТЫ</b></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" th:href="@{/index}">Инциденты</a>
+                <a class="nav-link active" th:href="@{/getAllAccidents}">Инциденты</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link active" th:href="@{/createAccident}">Добавить инцидент</a>
+                <a class="nav-link" th:href="@{/getFilters}">Фильтр</a>
             </li>
-            <li th:if="${username == 'root'}" class="nav-item" >
+            <li class="nav-item" >
                 <a class="nav-link" th:href="@{/allQueued}">Очередь</a>
             </li>
-            <li th:if="${username == 'root'}" class="nav-item">
+            <li class="nav-item" >
+                <a class="nav-link" th:href="@{/allReturned}">Возврат</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" th:href="@{/allArchived}">Архив</a>
+            </li>
+            <li style="margin-left: 30px">
+                <form th:action="@{/getAllByCarPlate}" method="GET" class="d-flex">
+                    <input type="search" name="car.plate" class="form-control me-2" placeholder="Введите ГРЗ:"
+                           pattern="^([авекмнорстхуabekmhopctxyАВЕКМНОРСТХУABEKMHOPCTXY]{1}\d{3}[авекмнорстхуabekmhopctxyАВЕКМНОРСТХУABEKMHOPCTXY]{2}\d{2,3})$" aria-label="Search" size="7" required/>
+                    <i class="fa fa-commenting-o" style="color: darkgrey" aria-hidden="true"
+                       title="формат: а000аа00 или а000аа000. Символы латиницы или кириллицы в любом регистре, включая символы чисел"></i>&nbsp
+                    <button class="btn btn-outline-secondary" type="submit" title="Найти"><i class="fa fa-search" aria-hidden="true"></i></button>
+                </form>
+            </li>
+            <li style="margin-left: 10px" class="nav-item">
+                <a class="nav-link" th:href="@{/getAllUsers}">Пользователи
+                    <i class="fa fa-users" aria-hidden="true" style="color: dimgrey"></i></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{|/user/credentials?username=${username}|}">Профиль
+                    <i class="fa fa-user" aria-hidden="true" style="color: dimgrey"></i></a>
             </li>
             <li class="nav-item">
                 <button type="button" class="btn btn-primary" onclick="window.location.href='/logout'">
@@ -76,14 +100,15 @@
         <div class="row pt-3">
             <div class="card" style="width: 70%; border-radius: 10px 10px 10px 10px">
                 <div class="card-header" style="border: lightslategray; background-color: burlywood">
-                    <span th:text="${accident.status.id == 2 ? 'Редактировать инцидент №-' + accident.id + ' (добавлен в очередь)'
-                        : 'Редактировать инцидент №-' + accident.id}"></span>
+                    <span th:text="${accident.status.id == 2 ? 'Редактирование инцидента №-' + accident.id + ' (добавлен в очередь)'
+                        : 'Редактирование инцидента №-' + accident.id}"></span>
                 </div>
                 <div class="card-body" th:with="username=${accident.user.username}">
                     <form th:action="@{/updateAccident}" method="POST" enctype="multipart/form-data" th:object="${accident}">
                         <div class="form-group">
                             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                             <input type="hidden" name="id" th:field="*{id}">
+                            <input type="hidden" name="carPlate" th:field="*{carPlate}">
                             <input type="hidden" name="username" th:value="${username}">
                             <input type="hidden" name="created" th:field="*{created}">
                             <label for="author"><b>Автор инцидента</b></label>
@@ -93,13 +118,13 @@
                             <br><br>
                             <label for="name"><b>Имя</b></label>
                             <br><br>
-                            <input type="text" id="name" class="form-control" style="width: 200px"
+                            <input type="text" id="name" class="form-control" style="width: 600px"
                                    placeholder="Введите имя" th:field="*{name}" required/>
                             <br><br>
                             <label for="type.id"><b>Тип</b></label>
                             <br><br>
                             <select class="select-type" id="type.id" name="type.id" size="7" required>
-                                <option th:text="${'Текущий тип: '}" style="background-color: lightcoral" disabled></option>
+                                <option th:text="${'Текущий тип: '}" style="color: #3d3d3d; background-color: lightcoral" disabled></option>
                                 <option th:text="${accident.type.name}" th:value="${accident.type.id}" style="background-color:bisque" readonly></option>
                                 <option disabled>Выбрать&#8595;:</option>
                                 <option th:each="type :${types}" th:text="${type.name}" th:value="${type.id}"></option>
@@ -116,7 +141,7 @@
                                 <div>
                                     <h6><em>Загруженные документы участниками ДТП&#8595;:</em></h6>
                                     <div th:each="document: ${documents}" th:unless="${document.author == 'root'}">
-                                        <a th:href="@{|/documents/${document.id}/show|}" title="открыть">
+                                        <a th:href="@{|/accidents/${accident.id}/documents/${document.id}/show|}" title="открыть">
                                             <span th:text="${document.fileName}"></span>
                                         </a>
                                     </div>
@@ -125,7 +150,7 @@
                                 <div>
                                     <h6><em>Загруженные документы инспектором ДПС&#8595;:</em></h6>
                                     <div th:each="document: ${documents}" th:if="${document.author == 'root'}">
-                                        <a th:href="@{|/documents/${document.id}/show|}" title="открыть">
+                                        <a th:href="@{|/accidents/${accident.id}/documents/${document.id}/show|}" title="открыть">
                                             <span th:text="${document.fileName}"></span>
                                         </a>
                                         <a th:href="@{|/documents/${document.id}/delete/confirm|}">
@@ -146,7 +171,7 @@
                             <br><br>
                             <label for="address"><b>Адрес ДТП</b></label>
                             <br><br>
-                            <input type="text" id="address" class="form-control" style="width: 400px"
+                            <input type="text" id="address" class="form-control" style="width: 600px"
                                    placeholder="Введите адрес" th:field="*{address}" required/>
                             <br><br>
                             <label for="rIds"><b>Статьи</b></label>
@@ -165,18 +190,23 @@
                             <br><br>
                         </div>
                         <div style="float: left">
-                            <input type="hidden" name="status.id" value="4">
+                            <input type="hidden" name="status.id" value="5">
+                            <input type="hidden" name="notice" value="Вынесено постановление!"/>
                             <button type="submit" class="btn btn-success">Решить</button>
                         </div>
                     </form>
-                    <div style="margin-left: 20%">
+                    <div style="float: left">
+                        <form th:action="@{|/accidents/${accident.id}/return/confirm|}" method="GET">
+                            <button type="submit" class="btn btn-danger" > Вернуть</button>
+                        </form>
+                    </div>
+                    <div style="float: left">
                         <form th:action="@{|/accidents/${accident.id}/addToQueue/confirm|}" method="GET">
-                            <input type="hidden" name="status.id" value="2"/>
                             <button type="submit" class="btn btn-warning" > В очередь</button>
                         </form>
                     </div>
                     <div style="float: right">
-                        <form th:action="@{/index}" method="GET">
+                        <form th:action="@{/getAllAccidents}" method="GET">
                             <button type="submit" class="btn btn-secondary">На главную</button>
                         </form>
                     </div>

@@ -26,11 +26,15 @@
 <body>
 <div class="container">
     <div id="container_form">
-        <h4><u>Registration</u></h4>
-        <h4 th:text="${'Dear, ' + user.username + ' , you have successfully registered in the system!!'}"></h4>
-        <br>
+        <h3><u>Успешная регистрация</u></h3>
+        <h4 th:text="${'Уважаемый, ' + user.username + ' , вы успешно зарегистрировались в приложении!!'}"></h4>
+        <h4>Карточки учёта ваших автомобилей с государственными регистрационными номерами:</h4>
+        <div th:each="card : ${user.registrationCards}" th:with="carPlate = ${card.carPlate}">
+          <span th:text="${carPlate}"></span>
+        </div>
+        <h4>успешно сохранены в базе данных!</h4>
         <div id="container_form_button" >
-            <button type="button" class="btn btn-secondary" onclick="window.location.href='/login'"> Login</button>
+            <button style="font-size: 15px" type="button" class="btn btn-secondary" onclick="window.location.href='/login'"> Login</button>
             <br><br>
         </div>
     </div>

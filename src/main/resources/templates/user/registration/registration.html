@@ -2,6 +2,70 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script type='text/javascript'>
+        var i = 0;
+        function addFields(){
+            i++;
+            newParagraphField();
+            newSpanField('carPlate');
+            newInputField('car.plate');
+            newSpanField('certificateNumber');
+            newInputField('certificate.number');
+            newSpanField('vinCode');
+            newInputField('vin.code');
+            container.appendChild(document.createElement('br'));
+        }
+        function newParagraphField(){
+            var p = document.createElement('p');
+            p.textContent = i + 1 + ' авто:';
+            container.appendChild(p);
+        }
+        function newSpanField(n){
+            container.appendChild(document.createElement('br'));
+            var span = document.createElement('span');
+            var text;
+            switch(n) {
+                case 'carPlate':
+                    text ='Регистрационный знак автомобиля';
+                    break;
+                case 'certificateNumber':
+                    text ='Номер свидетельства регистрации автомобиля';
+                    break;
+                case 'vinCode':
+                    text ='VIN-код автомобиля';
+                    break;
+            }
+            span.textContent = text;
+            container.appendChild(span);
+        }
+        function newInputField(n){
+            var input = document.createElement('input');
+            var regex;
+            var placeholderText;
+            input.type = 'text';
+            input.name = n;
+            input.required = true;
+            switch(n) {
+                case 'car.plate':
+                    regex = '^([авекмнорстхуabekmhopctxyАВЕКМНОРСТХУABEKMHOPCTXY]{1}\\d{3}[авекмнорстхуabekmhopctxyАВЕКМНОРСТХУABEKMHOPCTXY]{2}\\d{2,3})$';
+                    placeholderText ='Введите ГРЗ';
+                    break;
+                case 'certificate.number':
+                    regex = '^\\d{2}[авекмнорстхуabekmhopctxyАВЕКМНОРСТХУABEKMHOPCTXY]{2}\\d{6}$|^\\d{10}$';
+                    placeholderText ='Введите номер СТС';
+                    break;
+                case 'vin.code':
+                    regex = '^[wertyupasdfghjklzxcvbnmWERTYUPASDFGHJKLZXCVBNM0-9]{17}$';
+                    placeholderText ='Введите VIN-код';
+                    break;
+            }
+            input.pattern = regex;
+            input.placeholder = placeholderText;
+            container.appendChild(input);
+            container.appendChild(document.createElement('br'));
+        }
+    </script>
     <style>
         .container {
             position: absolute;
@@ -9,21 +73,32 @@
             left: 50%;
             margin: 0 -50% 0 0;
             transform: translate(-50%, -50%);
-            width: 500px;
+            width: 700px;
             border: dimgray solid 1px;
             border-radius: 10px 10px 10px 10px; background-color: #d6e9ff;
         }
         #container_form {
             padding: 0 30px;
         }
+        #container_form_table {
+            border: dimgray solid 1px;
+            border-radius: 10px 10px 10px 10px; background-color: #B5D2FDFF;
+            padding: 20px;
+            width: 600px;
+            font-size: 16px;
+            font-family: "Times New Roman",sans-serif;
+        }
         #container_form_button {
-            margin-left: 45%;
+            margin-left: 40%;
         }
         #error_msg {
             color:red;
             font-weight: bold;
             margin: 30px 0;
             text-align: center;
+        }
+        .comment_icon{
+            color: #3d3d3d;
         }
     </style>
     <title>Регистрация</title>
@@ -32,28 +107,83 @@
 <br>
 <div class="container">
     <div id="container_form">
-        <h4 style="text-align: center"><u>New User</u></h4>
+        <h3 style="text-align: center">Заполнение карточек учёта автомобилей нового пользователя.</h3>
+        <h3 style="text-align: center">Ввод регистрационных данных</h3>
         <h5 th:unless="${errorMessage == null}" id="error_msg"
             th:text="${errorMessage}" style="text-align: center"></h5>
         <form th:action="@{/register}" method="POST" th:object="${user}">
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
             <div class="form-group">
-                <table>
+                <table id="container_form_table">
                     <tr>
-                        <td><label for="name">Username</label></td>
-                        <td><input type="text" id="name" class="form-control"
-                                   placeholder="Input Username" th:field="*{username}" required/></td>
+                        <td><label for="owner_name">Имя владельца</label></td>
+                        <td>
+                            <input type="text" id="owner_name" placeholder="Введите имя" name="ownerName" th:value="${(card == null)? '' : card.ownerName}"
+                                   pattern="^[a-zA-Zа-яА-Я]{2,20}$" required/></td>
+                        <td class="comment_icon"><i class="fa fa-commenting-o" aria-hidden="true"
+                               title="формат: 2-20 текстовых символов латиницы или кириллицы в любом регистре без пробелов и прочих знаков"></i></td>
                     </tr>
                     <tr>
-                        <td><label for="password">Password</label></td>
-                        <td><input type="password" id="password"
-                                   placeholder="Input password" th:field="*{password}" required/></td>
+                        <td><label for="owner_surname">Фамилия владельца</label></td>
+                        <td>
+                            <input type="text" id="owner_surname" placeholder="Введите фамилию" name="ownerSurname" th:value="${(card == null)? '' : card.ownerSurname}"
+                                   pattern="^[a-zA-Zа-яА-Я-]{2,30}$" required/></td>
+                        <td class="comment_icon"><i class="fa fa-commenting-o" aria-hidden="true"
+                           title="формат: 2-30 текстовых символов латиницы или кириллицы в любом регистре без пробелов и прочих знаков. Допустим знак дефиса"></i></td>
+                    </tr>
+                    <tr>
+                        <td><label for="car_plate">Регистрационный знак автомобиля</label></td>
+                        <td>
+                            <input type="text" id="car_plate" placeholder="Введите ГРЗ" name="car.plate" th:value="${(card == null)? '' : card.carPlate}"
+                                   pattern="^([авекмнорстхуabekmhopctxyАВЕКМНОРСТХУABEKMHOPCTXY]{1}\d{3}[авекмнорстхуabekmhopctxyАВЕКМНОРСТХУABEKMHOPCTXY]{2}\d{2,3})$" required/></td>
+                        <td class="comment_icon"><i class="fa fa-commenting-o" aria-hidden="true"
+                           title="формат: а000аа00 или а000аа000. Символы латиницы или кириллицы в любом регистре, включая символы чисел"></i></td>
+                    </tr>
+                    <tr>
+                        <td><label for="reg_number">Номер свидетельства регистрации автомобиля</label></td>
+                        <td>
+                            <input type="text" id="reg_number" placeholder="Введите номер СТС" name="certificate.number" th:value="${(card == null)? '' : card.certificateNumber}"
+                                   pattern="^\d{2}[авекмнорстхуabekmhopctxyАВЕКМНОРСТХУABEKMHOPCTXY]{2}\d{6}$|^\d{10}$" required/></td>
+                        <td class="comment_icon"><i class="fa fa-commenting-o" aria-hidden="true"
+                            title="формат: 12AB345678 или 0123456789. Символы латиницы или кириллицы в любом регистре, включая символы чисел"></i></td>
+                    </tr>
+                    <tr>
+                        <td><label for="vin_code">VIN - код автомобиля</label></td>
+                        <td>
+                            <input type="text" id="vin_code" placeholder="Введите VIN-код" name="vin.code" th:value="${(card == null)? '' : card.vinCode}"
+                                   pattern="^[wertyupasdfghjklzxcvbnmWERTYUPASDFGHJKLZXCVBNM0-9]{17}$" required/></td>
+                        <td class="comment_icon"><i class="fa fa-commenting-o" aria-hidden="true"
+                            title="формат: 17 текстовых символов латиницы в любом регистре, включая символы чисел"></i></td>
+                    </tr>
+                    <tr>
+                        <td><label for="email">email</label></td>
+                        <td><input type="text" id="email" class="form-control" placeholder="Введите email" th:field="*{email}"
+                                   pattern="^[-\w.]+@([A-z0-9][-A-z0-9]+\.)+[A-z]{2,4}$" required/></td>
+                        <td class="comment_icon"><i class="fa fa-commenting-o" aria-hidden="true"
+                             title="формат: email"></i></td>
+                    </tr>
+                    <tr>
+                        <td><label for="username">username</label></td>
+                        <td><input type="text" id="username" class="form-control" placeholder="Введите username" th:field="*{username}"
+                                   pattern="^[a-zA-Z0-9а-яА-Я._-]{4,10}$" required/></td>
+                        <td class="comment_icon"><i class="fa fa-commenting-o" aria-hidden="true"
+                            title="формат: 4-10 текстовых символов латиницы или кириллицы в любом регистре, включая символы чисел. Допустимы символы ._-"></i></td>
+                    </tr>
+                    <tr>
+                        <td><label for="password">password</label></td>
+                        <td><input type="password" id="password" class="form-control" placeholder="Введите password" th:field="*{password}"
+                                   pattern="^[a-zA-Z0-9а-яА-Я.,:;_?!*(){}]{6,10}$"  required/></td>
+                        <td class="comment_icon"><i class="fa fa-commenting-o" aria-hidden="true"
+                            title="формат: 6-10 текстовых символов латиницы или кириллицы в любом регистре, включая символы чисел. Допустимы символы .,:;_?!*(){}"></i></td>
                     </tr>
                 </table>
                 <br>
+                <div id="container"></div>
+                <button style="font-size: 15px" onclick="addFields()">Добавить авто</button>
+                <br><br><br>
             </div>
             <div id="container_form_button">
-                <button type="submit">Register</button>
+                <button style="font-size: 15px" type="submit">Зарегистрировать</button>
                 <br><br>
             </div>
         </form>

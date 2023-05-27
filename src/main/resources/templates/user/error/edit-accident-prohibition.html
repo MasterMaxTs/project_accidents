@@ -15,6 +15,10 @@
             crossorigin="anonymous"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <style>
+        .main_container {
+            border-radius: 10px 10px 10px 10px;
+            background-color: #f6f5f5
+        }
         .container2 {
             position: absolute;
             top: 50%;
@@ -37,7 +41,7 @@
 </head>
 <body>
 <br>
-<div class="container" style="border-radius: 10px 10px 10px 10px; background-color: #f6f5f5">
+<div class="container main_container">
     <br>
     <div class="container">
         <ul class="nav nav-tabs">
@@ -45,18 +49,16 @@
                 <a class="nav-link" aria-current="page" href="#"><b>АВТОИНЦИДЕНТЫ</b></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" th:href="@{/index}">Инциденты</a>
+                <a class="nav-link" th:href="@{/getAllByUser}">Инциденты</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link active" th:href="@{/createAccident}">Добавить инцидент</a>
             </li>
-            <li th:if="${username == 'root'}" class="nav-item" >
-                <a class="nav-link" th:href="@{/allQueued}">Очередь</a>
+            <li class="nav-item" style="margin-left: 500px">
+                <a class="nav-link" th:href="@{|/user/credentials?username=${username}|}">Профиль
+                    <i class="fa fa-user" aria-hidden="true" style="color: dimgrey"></i></a>
             </li>
-            <li th:if="${username == 'root'}" class="nav-item">
-                <a class="nav-link" th:href="@{/allArchived}">Архив</a>
-            </li>
-            <li class="nav-item">
+            <li class="nav-item" style="margin-left: 20px">
                 <button type="button" class="btn btn-primary" onclick="window.location.href='/logout'">
                     <span th:text="${username + ' |Выйти'}"></span></button>
             </li>
@@ -70,12 +72,13 @@
                 <div class="container2_form">
                     <br>
                     <h4 th:text="${'Инцидент №-' + id + ' не может быть редактирован в данный момент!'}"></h4>
-                    <h4>По нему проводится работа!</h4>
-                    <h4>Дождитесь постановления от инспектора ДПС.</h4><br>
-                    <h5 th:text="${'Статус сопровождения инцидента №-' + id + ' отличный от статуса <Принят>' }"></h5>
-                    <br>
+                    <h4>По нему проводится работа!</h4><br>
+                    <div style="font-weight: bold; font-size: 10px">
+                        <p>Статус сопровождения обновляемого автоинцидента отличный от текущего статуса сопровождения этого автоинцидента в БД!</p>
+                        <br>
+                    </div>
                     <div class="container2_form_button">
-                        <button type="button" class="btn btn-secondary" onclick="window.location.href='/index'"> Закрыть</button>
+                        <button type="button" class="btn btn-secondary" onclick="window.location.href='/getAllByUser'"> Закрыть</button>
                         <br><br>
                     </div>
                 </div>
