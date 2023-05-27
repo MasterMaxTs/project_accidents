@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import ru.job4j.accidents.api.LoginSuccessHandler;
 
 import javax.sql.DataSource;
 
@@ -24,6 +25,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      * Объект DataSource
      */
     private final DataSource ds;
+
+    /**
+     * Объект LoginSuccessHandler
+     */
+    private LoginSuccessHandler loginSuccessHandler;
 
     /**
      * Создаёт механизм для аутентификации пользователей.
@@ -57,7 +63,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                     .formLogin()
                     .loginPage("/login")
-                    .defaultSuccessUrl("/index")
+                    .successHandler(loginSuccessHandler)
                     .failureUrl("/login?error=true")
                     .permitAll()
                 .and()
@@ -65,7 +71,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .logoutSuccessUrl("/login?logout=true")
                     .invalidateHttpSession(true)
                     .permitAll()
-                    .and()
+                .and()
                     .csrf()
                     .disable();
     }
