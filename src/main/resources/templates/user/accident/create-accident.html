@@ -37,6 +37,10 @@
         }
     </script>
     <style>
+        .main_container {
+            border-radius: 10px 10px 10px 10px;
+            background-color: #f6f5f5
+        }
         .select-type {
             width: 300px;
         }
@@ -45,7 +49,7 @@
 </head>
 <body>
 <br>
-<div class="container" style="border-radius: 10px 10px 10px 10px; background-color: #f6f5f5">
+<div class="container main_container">
     <br>
     <div class="container">
         <ul class="nav nav-tabs">
@@ -53,18 +57,16 @@
                 <a class="nav-link" aria-current="page" href="#"><b>АВТОИНЦИДЕНТЫ</b></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" th:href="@{/index}">Инциденты</a>
+                <a class="nav-link" th:href="@{/getAllByUser}">Инциденты</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link active" th:href="@{/createAccident}">Добавить инцидент</a>
             </li>
-            <li th:if="${username == 'root'}" class="nav-item" >
-                <a class="nav-link" th:href="@{/allQueued}">Очередь</a>
+            <li class="nav-item" style="margin-left: 500px">
+                <a class="nav-link" th:href="@{|/user/credentials?username=${username}|}">Профиль
+                    <i class="fa fa-user" aria-hidden="true" style="color: dimgrey"></i></a>
             </li>
-            <li th:if="${username == 'root'}" class="nav-item">
-                <a class="nav-link" th:href="@{/allArchived}">Архив</a>
-            </li>
-            <li class="nav-item">
+            <li class="nav-item" style="margin-left: 20px">
                 <button type="button" class="btn btn-primary" onclick="window.location.href='/logout'">
                     <span th:text="${username + ' |Выйти'}"></span></button>
             </li>
@@ -80,9 +82,17 @@
                         <div class="form-group">
                             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                             <input type="hidden" name="username" th:value="${username}">
+                            <label for="car.plate"><b>Номер транспортного средства владельца</b></label>
+                            <br><br>
+                            <table id="car.plate">
+                                <tr th:each="card : ${registrationCards}" th:with="carPlate=${card.carPlate}">
+                                    <td><input type="radio" name="car.plate" th:text="${carPlate}" th:value="${carPlate}" required></td>
+                                </tr>
+                            </table>
+                            <br><br>
                             <label for="name"><b>Имя</b></label>
                             <br><br>
-                            <input type="text" id="name" class="form-control" style="width: 200px"
+                            <input type="text" id="name" class="form-control" style="width: 600px;"
                                    placeholder="Введите имя" th:field="*{name}" required/>
                             <br><br>
                             <label for="type.id"><b>Тип</b></label>
@@ -106,7 +116,7 @@
                             <br><br><br>
                             <label for="address"><b>Адрес ДТП</b></label>
                             <br><br>
-                            <input type="text" id="address" class="form-control" style="width: 400px"
+                            <input type="text" id="address" class="form-control" style="width: 600px"
                                    placeholder="Введите адрес" th:field="*{address}" required/>
                             <br><br>
                         </div>
