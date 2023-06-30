@@ -367,7 +367,7 @@ class AccidentControllerTest {
                         .param("car_plate", carPlate)
                 ).andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(view().name("/admin/accident/show-reg-card"))
+                .andExpect(view().name("admin/accident/show-reg-card"))
                 .andExpect(model().attribute("card", card));
     }
 

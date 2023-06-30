@@ -539,7 +539,7 @@ public class AccidentController {
      */
     @GetMapping("/registration-card")
     public ModelAndView viewShowRegistrationCard(@RequestParam("car_plate") String carPlate) {
-        return new ModelAndView("/admin/accident/show-reg-card")
+        return new ModelAndView("admin/accident/show-reg-card")
                 .addObject("card",
                         registrationCardService.findByCarPlate(carPlate));
     }
