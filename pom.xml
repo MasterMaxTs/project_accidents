@@ -78,7 +78,7 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-jdbc</artifactId>
-      <version>5.3.24</version>
+      <version>5.3.25</version>
     </dependency>
 
     <dependency>
@@ -102,7 +102,7 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-orm</artifactId>
-      <version>5.3.24</version>
+      <version>5.3.25</version>
     </dependency>
 
     <dependency>

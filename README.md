@@ -1,6 +1,32 @@
 # job4j_accidents
+#### Сервис "Сайт_Дистанционное урегулирование дорожно-транспортных происшествий"
 
 [![Build Status](https://app.travis-ci.com/MasterMaxTs/project_accidents.svg?branch=master)](https://app.travis-ci.com/MasterMaxTs/project_accidents)
+
+
+![](https://img.shields.io/badge/java-11-4AB197)&nbsp;&nbsp;&nbsp;<br>
+![](https://img.shields.io/badge/maven-3.6.3-4AB197)&nbsp;&nbsp;&nbsp;<br>
+![](https://img.shields.io/badge/maven--checkstyle--plugin-3.1.2-4AB197)&nbsp;&nbsp;&nbsp;
+![](https://img.shields.io/badge/liquibase--maven--plugin-4.20.0-4AB197)&nbsp;&nbsp;&nbsp;
+![](https://img.shields.io/badge/jacoco--maven--plugin-0.8.8-4AB197)&nbsp;&nbsp;&nbsp;
+![](https://img.shields.io/badge/maven--javadoc--plugin-3.2.0-4AB197)&nbsp;&nbsp;&nbsp;
+![](https://img.shields.io/badge/maven--war--plugin-3.4.0-4AB197)&nbsp;&nbsp;&nbsp;<br>
+![](https://img.shields.io/badge/spring--boot--starter--web-2.7.8-4AB197)&nbsp;&nbsp;&nbsp;
+![](https://img.shields.io/badge/spring--boot--starter--thymeleaf-2.7.8-4AB197)&nbsp;&nbsp;&nbsp;
+![](https://img.shields.io/badge/spring--jdbc-5.3.25-4AB197)&nbsp;&nbsp;&nbsp;
+![](https://img.shields.io/badge/spring--data--jpa-2.7.4-4AB197)&nbsp;&nbsp;&nbsp;<br>
+![](https://img.shields.io/badge/spring--orm-5.3.25-4AB197)&nbsp;&nbsp;&nbsp;
+![](https://img.shields.io/badge/spring--security--web-5.7.6-4AB197)&nbsp;&nbsp;&nbsp;
+![](https://img.shields.io/badge/hibenate--core-5.6.11-4AB197)&nbsp;&nbsp;&nbsp;
+![](https://img.shields.io/badge/lombok-1.18.26-4AB197)&nbsp;&nbsp;&nbsp;<br>
+![](https://img.shields.io/badge/Style:_bootstrap-5.0.2-4AB197)&nbsp;&nbsp;&nbsp;
+![](https://img.shields.io/badge/Style:_html-5-4AB197)&nbsp;&nbsp;&nbsp;
+![](https://img.shields.io/badge/Style:_css-3-4AB197)&nbsp;&nbsp;&nbsp;
+![](https://img.shields.io/badge/DBMS:_PostgreSQL-14.0-4AB197)&nbsp;&nbsp;&nbsp;<br>
+![](https://img.shields.io/badge/Test:_spring--boot--starter--test-2.7.8-4AB197)&nbsp;&nbsp;&nbsp;
+![](https://img.shields.io/badge/Test:_h2database-2.1.214-4AB197)&nbsp;&nbsp;&nbsp;<br><br>
+![](https://img.shields.io/badge/Package:-.war-4AB197)&nbsp;&nbsp;&nbsp;
+
 
 ### Это проект по созданию сайта "Автонарушители", доступного в браузере.
 В системе существуют две роли: _Обычные пользователи_ и _Автоинспекторы_.
@@ -97,26 +123,20 @@ ___
 ### Стек технологий
 
 - Java 11
-- Spring boot v.2.7.8.
-- Thymeleaf v.2.7.8.
-- Bootstrap v.5.0.2.
-- Hibernate v.5.6.11.
+- Spring-boot-starter-web v.2.7.8.
+- Spring-boot-starter-thymeleaf v.2.7.8.
 - Spring-data-jpa v.2.7.4
-- Spring-jdbc v.5.3.24
+- Spring-jdbc v.5.3.25
+- Spring-orm v.5.3.25
 - Spring-security v.5.7.6
+- Hibernate-core v.5.6.11.
+- Bootstrap v.5.0.2.
+
 - Lombok v.1.18.26.
 - СУБД: PostgreSQL v.14.0.
-- Liquibase plugin v.4.20.0
-
-
+<br><br>
 - Тестирование:
-  - Spring boot test v.2.7.8.
-  - Spring test v.5.3.25
-  - Spring security test v.5.7.6.
-  - Junit-Jupiter v.5.8.2
-  - Assertj-core v.3.22.0
-  - mockito-core v.4.5.1
-  - Liquibase plugin v.4.20.0
+  - Spring-boot-starter-test v.2.7.8.
   - БД: h2database v.2.1.214
 
 <br>
