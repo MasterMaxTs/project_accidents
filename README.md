@@ -77,9 +77,9 @@
 
 4. Отслеживать и читать в реальном времени уведомления от автоинспектора(ов) в процессе рассмотрения заявки:
 <br><br>
-   > * ![img.png](img/bell_icon.png)&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; перевод заявки в статус <em>"Решён"</em>
-   > * ![img.png](img/bell_icon.png)![img.png](img/bell_icon.png)&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; перевод заявки в статус <em>"Ожидание"</em>
-   > * ![img.png](img/bell_icon.png)![img.png](img/bell_icon.png)![img.png](img/bell_icon.png)&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; перевод заявки в статус <em>"Возвращён"</em>
+   > * ![img.png](img/bell_icon.JPG) &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; перевод заявки в статус <em>"Решён"</em>
+   > * ![img.png](img/bell_icon.JPG) ![img.png](img/bell_icon.JPG) &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; перевод заявки в статус <em>"Ожидание"</em>
+   > * ![img.png](img/bell_icon.JPG) ![img.png](img/bell_icon.JPG) ![img.png](img/bell_icon.JPG) &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; перевод заявки в статус <em>"Возвращён"</em>
 
 <br>
 
@@ -105,10 +105,10 @@ ___
 2. Выполнять фильтрацию электронных заявок на основе фильтров и поиска заявок по ГРЗ автомобиля
 
     > Для быстрого доступа к элементам навигационного меню, связанных с обработкой заявок, на начальной странице и страницах с отфильтрованными заявками созданы дополнительные панели ссылок:
-     >    > * Главная страница:<br>![img.png](img/admin_index_links_panel.JPG)<br><br>
-     >    > * Страница фильтрации:<br>![img.png](img/admin_filter_links_panel.JPG)<br><br>
-     >    > * Страница ожидающих решения заявок:<br>![img.png](img/admin_filter_queue_links_panel.JPG)<br><br>
-     >    > * Страница возвращённых заявок:<br>![img.png](img/admin_filter_return_links_panel.JPG)
+     >    > * Главная страница:<br> ![img.png](img/admin_index_links_panel.JPG) <br><br>
+     >    > * Страница фильтрации:<br> ![img.png](img/admin_filter_links_panel.JPG) <br><br>
+     >    > * Страница ожидающих решения заявок:<br> ![img.png](img/admin_filter_queue_links_panel.JPG) <br><br>
+     >    > * Страница возвращённых заявок:<br> ![img.png](img/admin_filter_return_links_panel.JPG)
 
 <br>
 
@@ -123,6 +123,8 @@ ___
 ### Стек технологий
 
 - Java 11
+- Maven 3.6.3
+- Liquibase-maven-plugin v.4.20.0
 - Spring-boot-starter-web v.2.7.8.
 - Spring-boot-starter-thymeleaf v.2.7.8.
 - Spring-data-jpa v.2.7.4
@@ -166,7 +168,7 @@ ___
 
 4. Перейти в директорию проекта, открыть командную строку.</br>
  - Для <ins>первого</ins> запуска приложения выполнить последовательно команды:
-     - ```mvn install```
+     - ```mvn package -Dmaven.test.skip=true```
      - ```java -jar target/accidents-1.0.war```
      - внизу окна командной строки скопировать в буфер обмена url:
          <br>http://localhost:8080/index
@@ -199,7 +201,7 @@ ___
 ### Закрытие проекта
 Закройте окно командной строки либо:
 1. Запишите id процесса (PID) в логах из командной строки:
-   ![img.png](img/stop_app_pid.png)
+   ![img.png](img/stop_app_pid.JPG)
 2. Через диспетчер устройств выполните завершение процесса c этим PID
 
 
@@ -464,5 +466,7 @@ ___
 
 ---
 ### Контакты
-* email: max86ts@gmail.com
-* telegram: matsurkanov
+* Email: java.dev-maxim.tsurkanov@yandex.ru
+* Skype: https://join.skype.com/invite/ODADx0IJ3BBu
+* VK: https://m.vk.com/id349328153
+* Telegram: matsurkanov
